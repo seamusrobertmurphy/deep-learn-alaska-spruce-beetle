@@ -134,3 +134,5 @@ Rplots.pdf
 03.outputs/figures/*.tif
 /cover_letter.docx
 01.manuscript/cover_letter/
+
+docs/

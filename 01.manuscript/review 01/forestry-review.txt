@@ -1,0 +1,6 @@
+The editorial office email of 23 October asked for four things. Here is where each was met.
+
+1. First page per template. The YAML title block is replaced by a hand-written first page above the Abstract in manuscript.qmd, in the template's order. Journal header with the logo from the template, bold title, your name with a superscript 1 and asterisk, the italic affiliation, then the corresponding author line with email and ORCID. The template also asks for a telephone number, which I did not have, so that is yours to add.
+2. Tables and figures in the text. The layout tool _tools/forestry-layout.py gained an --inline flag that leaves all six tables and both figures where they are cited instead of moving them after the References. Each table still sits on a landscape page at its position.
+3. Four statements before References. The end matter now runs Supplementary material, Funding, Acknowledgements, Conflict of interest statement, Author contributions, Data availability statement, References. Acknowledgements is new and thanks Zwieback and co-authors, the Forest Service Alaska Region, and Earth Engine. Its wording is yours to confirm.
+4. Data availability statement. Rewritten in the OUP sample form. It names the two public every public sourcewith its DOI or URL. The severity map now has a dataset reference, verified through its

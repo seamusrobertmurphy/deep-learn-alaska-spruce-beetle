@@ -39,6 +39,19 @@ def break_para(sect):
     return p
 
 
+def text_size(group, half_points):
+    # Set the text size of every run in the block's tables, the template's 10 pt, or 9 pt for a table of ten or more columns (Seamus's file of 2026-10-25).
+    for tbl in (t for el in group for t in ([el] if el.tag == q("tbl") else el.iter(q("tbl")))):
+        for r in tbl.iter(q("r")):
+            rpr = r.find(q("rPr"))
+            if rpr is None:
+                rpr = etree.Element(q("rPr")); r.insert(0, rpr)
+            for tag in ("sz", "szCs"):
+                e = rpr.find(q(tag))
+                if e is None: e = etree.SubElement(rpr, q(tag))
+                e.set(q("val"), str(half_points))
+
+
 def widen(group, width):
     # Scale each table grid in the block to the landscape text width, keeping the columns' proportions.
     for grid in (g for el in group for g in el.iter(q("tblGrid"))):
@@ -76,6 +89,8 @@ def main(path):
         first = False
         end = break_para(landscape(final, text_w)); g[-1].addnext(end); ends.add(end)
         widen(g, text_w)
+        ncol = max((len(tr.findall(q("tc"))) for el in g for tr in el.iter(q("tr"))), default=0)  # flextable writes no grid, so the columns are counted from the widest row
+        text_size(g, 18 if ncol >= 10 else 20)
     not_first(final)
     xml = etree.tostring(root, xml_declaration=True, encoding="UTF-8", standalone=True)
     fd, tmp = tempfile.mkstemp(suffix=".docx", dir=os.path.dirname(os.path.abspath(path))); os.close(fd)
