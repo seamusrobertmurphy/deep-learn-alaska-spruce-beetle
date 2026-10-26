@@ -1,0 +1,49 @@
+---
+title: ""
+format:
+  docx:
+    reference-doc: ../04.references/style-formal.docx
+engine: knitr
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: letter-numbers
+# Every number below is read from the tables the manuscript writes, so the letter cannot disagree with the paper.
+strip <- read.csv("../03.outputs/statewide_strip.csv"); area <- read.csv("../03.outputs/statewide_area.csv")
+pct <- function(x) sprintf("%.0f", 100 * x)
+```
+
+`r format(Sys.Date(), "%d %B %Y")`
+
+Isobel Gavan\
+Editorial Office\
+Forestry: An International Journal of Forest Research
+
+Manuscript ID Forestry-2026-310
+
+Dear Isobel Gavan,
+
+Thank you for your email of 23 October 2026 returning the manuscript "A spruce beetle susceptibility map of Alaska using Sentinel-1 radar and crown-scale mortality data", Forestry-2026-310, with four amendments to make before it could proceed. Each has been made in the unsubmitted version held in my Author Centre, as you asked, and the amended main document replaces the original there.
+
+The first page now follows the template you attached. It opens with the journal header, then the title, the author line with its affiliation marker, the affiliation, and the corresponding author line with email address and ORCID, and the abstract follows without a heading.
+
+The six tables and two figures now sit within the text at the places where they are first cited, each with its caption, rather than after the reference list. The separate figure files remain ready to upload at the stage you indicate.
+
+A Funding statement, an Acknowledgements statement, a Conflict of interest statement and a Data availability statement now close the manuscript, in that order, immediately before the References.
+
+The Data availability statement follows the form set out in the Oxford University Press research data policy. It names the two public Google Earth Engine assets that hold the map, then each source from which the map and its validation were derived, with the digital object identifier or download address of each, and it identifies the one dataset that carries no declared licence and was used for validation only.
+
+While making these changes I also revised the wording throughout and added to the Methods the equations that define the accuracy measures and the mapping rule. The study, its data, its results and its conclusions are unchanged. The paper tests whether pre-outbreak Sentinel-1 backscatter picks out the spruce stands an outbreak kills, which it did at an overall accuracy of `r pct(strip$acc_VV)` per cent on `r format(strip$n, big.mark = ",")` cells of 90 m in the Susitna valley, and it maps that susceptibility across `r format(round(area$forest_km2[area$region == "alaska"]), big.mark = ",")` km² of Alaskan forest as a public Google Earth Engine asset.
+
+The manuscript is original, has not been published and is not under consideration elsewhere. I am the sole author, I have no competing interests to declare, and the work received no funding.
+
+Yours sincerely,
+
+Dr Seamus Murphy\
+TÜV SÜD, 2187 Comox Avenue, Comox, British Columbia V9M 1P5, Canada\
+seamusrobertmurphy@gmail.com\
+ORCID 0000-0002-1792-0351
