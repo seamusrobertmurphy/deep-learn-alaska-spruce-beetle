@@ -131,6 +131,8 @@ Rplots.pdf
 01.manuscript/_archive/*.docx
 03.outputs/submission/*.docx
 03.outputs/submission/*.tif
+03.outputs/submission_revision/*.docx
+03.outputs/submission_revision/*.tif
 03.outputs/figures/*.tif
 /cover_letter.docx
 01.manuscript/cover_letter/
