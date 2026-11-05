@@ -1,0 +1,17 @@
+---
+title: ""
+format:
+  docx:
+    reference-doc: ../04.references/style-formal.docx
+engine: knitr
+---
+
+**A pre-outbreak map of spruce beetle susceptibility across Alaska from Sentinel-1 radar backscatter**
+
+Seamus Robert Murphy^a,\*^
+
+^a^ TÜV SÜD, 2187 Comox Avenue, Comox, British Columbia V9M 1P5, Canada
+
+\* Corresponding author. Email seamusrobertmurphy@gmail.com. ORCID 0000-0002-1792-0351.
+
+Research paper submitted to the Journal of Applied Remote Sensing, `r format(Sys.Date(), "%d %B %Y")`.

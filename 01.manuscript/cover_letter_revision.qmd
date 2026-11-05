@@ -1,0 +1,41 @@
+---
+title: ""
+format:
+  docx:
+    reference-doc: ../04.references/style-formal.docx
+engine: knitr
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: letter-numbers
+strip <- read.csv("../03.outputs/statewide_strip.csv"); area <- read.csv("../03.outputs/statewide_area.csv"); chg <- read.csv("../03.outputs/stand_change.csv"); st <- read.csv("../03.outputs/landscape_structure.csv", row.names = 1)
+pct <- function(x) sprintf("%.0f", 100 * x); f2 <- function(x) sprintf("%.2f", x)
+```
+
+`r format(Sys.Date(), "%d %B %Y")`
+
+The Editor\
+Journal of Applied Remote Sensing
+
+Dear Editor,
+
+I submit the manuscript "A pre-outbreak map of spruce beetle susceptibility across Alaska from Sentinel-1 radar backscatter" for consideration as a research paper.
+
+The paper maps the spruce stands that the spruce beetle attacks first, before an outbreak reaches them. The map is made from Sentinel-1 radar backscatter of October 2014 to December 2016, recorded before the beetle reached the Susitna valley of Alaska. The crown-scale mortality map of Zwieback et al. (2024), the aerial detection survey of the Forest Service and the inventory plots serve only to test the map. The paper therefore does not detect dieback, and its Figure 2 sets out each dataset, processing step and test.
+
+In the Susitna valley, the pre-outbreak level ranked killed above surviving stands of 90 m with an area under the curve of `r f2(chg$auc_pre[chg$band == "VV65"])` and `r f2(chg$auc_pre[chg$band == "VV131"])` on the two orbits. The change in backscatter through the outbreak gave `r f2(min(chg$auc_change))` to `r f2(max(chg$auc_change))`, no better than chance, because the radar recorded stand structure and not mortality. On the `r format(strip$n, big.mark = ",")` cells of the severity map, the statewide product reached an overall accuracy of `r pct(strip$acc_VV)` per cent at its threshold. L-band PALSAR backscatter ranked the same cells as well as the Sentinel-1 level, with an area under the curve of `r f2(st["AUC", "HV_pre"])` against `r f2(st["AUC", "VV65_pre"])`. The map classified `r pct(area$susceptible_km2[area$region == "alaska"] / area$forest_km2[area$region == "alaska"])` per cent of Alaska's `r format(round(area$forest_km2[area$region == "alaska"]), big.mark = ",")` km² of forest as susceptible, and it is public in Google Earth Engine for forest managers.
+
+A recent review of remote sensing for bark beetle attacks named the 'lack of remote sensing-assisted large-scale assessments of susceptibility to disturbance' as an open gap (Candotti et al. 2026). This paper fills that gap for Alaska with freely available radar.
+
+The manuscript is original, has not been published and is not under consideration elsewhere. I am the sole author, I have no competing interests to declare, and the work received no funding.
+
+Yours sincerely,
+
+Dr Seamus Murphy\
+TÜV SÜD, 2187 Comox Avenue, Comox, British Columbia V9M 1P5, Canada\
+seamusrobertmurphy@gmail.com\
+ORCID 0000-0002-1792-0351
