@@ -1,7 +1,7 @@
 """Writes the tables of a laid-out Word manuscript to their own Word file, for the separate tables upload.
 
 Run on the laid-out manuscript, after forestry-layout.py and landscape-tables.py:
-  python3 _tools/tables-file.py manuscript_submission.docx tables.docx
+  python3 ../05.scripts/tables-file.py manuscript-forestry-2026-10-19.docx tables.docx
 
 The laid-out manuscript ends with the tables on their own pages and then the figures. This keeps the body
 from the first table's page to the last table's page, with the section breaks that turn wide tables

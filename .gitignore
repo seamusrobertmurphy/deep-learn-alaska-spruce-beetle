@@ -75,12 +75,13 @@ INDEX.md
 01.manuscript/Rplots.pdf
 ~$*.docx
 **/~$*
-01.manuscript/manuscript/
+# Word's backup folders. 01.manuscript holds files only, no subfolders. Set 2026-11-06.
+01.manuscript/*/
 
 # Local state for the prose guard; regenerated with --record.
-01.manuscript/_tools/.prose_guard.json
+05.scripts/.prose_guard.json
 
-# Eval run reports. One CSV per run of 01.manuscript/_tools/eval.py, so the
+# Eval run reports. One CSV per run of 05.scripts/eval.py, so the
 # directory grows with every check rather than with every result. Nothing in
 # the manuscript cites them and no check reads them; the state a later run
 # compares against lives in 03.outputs/eval-baseline.json, which is committed.
@@ -89,7 +90,7 @@ INDEX.md
 # The rendered manuscript. Regenerated from the .qmd, which is the single
 # source of truth, so a committed copy is only ever a stale one; the render
 # that matters is the one the eval runs with --render.
-01.manuscript/manuscript.html
+01.manuscript/*.html
 
 # Radar block stacks and cube, regenerable from 05.scripts/14, 15 and 19; the cube alone is 437 MB
 02.inputs/derived/s1_scene_cache_30m/
@@ -114,7 +115,7 @@ INDEX.md
 02.inputs/derived/stand_cells_static.csv
 03.outputs/reference_chips/
 03.outputs/fire_fold_predictions.csv
-01.manuscript/_archive/*.html
+06.archive/*.html
 Rplots.pdf
 
 # The 90 m release package of the statewide map, built by the statewide-release chunk:
@@ -128,13 +129,12 @@ Rplots.pdf
 # Word copies of the author's edits, the submission folder's duplicates of the renders and
 # the journal's TIFF figures are build products that bloat the history; the renders in
 # 01.manuscript and the PNG figures the README shows are the committed copies. Added 2026-10-19.
-01.manuscript/_archive/*.docx
+06.archive/*.docx
 03.outputs/submission/*.docx
 03.outputs/submission/*.tif
 03.outputs/submission_revision/*.docx
 03.outputs/submission_revision/*.tif
 03.outputs/figures/*.tif
 /cover_letter.docx
-01.manuscript/cover_letter/
 
 docs/

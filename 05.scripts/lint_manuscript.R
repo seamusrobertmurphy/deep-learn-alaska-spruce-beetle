@@ -1,5 +1,5 @@
 # Parses every chunk and inline expression of manuscript.qmd, and lists figure or table labels without a cross-reference and citation keys missing from references.bib. Run from the repository root.
-src <- readLines("01.manuscript/manuscript.qmd"); op <- grep("^```\\{r", src); cl <- grep("^```\\s*$", src)
+src <- readLines("01.manuscript/manuscript-jars.qmd"); op <- grep("^```\\{r", src); cl <- grep("^```\\s*$", src)
 for (o in op) { e <- cl[cl > o][1]; b <- src[(o+1):(e-1)]; lab <- sub("#\\| label: ", "", grep("^#\\| label:", b, value = TRUE))
   r <- tryCatch({ parse(text = b[!grepl("^#\\|", b)]); "ok" }, error = function(err) conditionMessage(err)); cat(lab, r, "\n") }
 inl <- unlist(regmatches(src, gregexpr("`r [^`]+`", src))); cat(length(inl), "inline expressions\n")

@@ -1,7 +1,7 @@
 """Builds README.md from the laid-out submission manuscript, so that the README's title, abstract, tables, figures and
 data availability statement are the rendered manuscript's and cannot drift from it.
 
-  python3 _tools/readme-from-docx.py ../03.outputs/submission/manuscript.docx ../03.outputs/submission/supplementary_material.docx ../README.md
+  python3 ../05.scripts/readme-from-docx.py ../03.outputs/submission/manuscript.docx ../03.outputs/submission/supplementary_material.docx ../README.md
 
 Tables become GitHub pipe tables with the caption above, figures become the PNG copies in 03.outputs/figures at full
 width with the caption below, and asterisks and pipes in cell text are escaped so GitHub does not read them as markup.

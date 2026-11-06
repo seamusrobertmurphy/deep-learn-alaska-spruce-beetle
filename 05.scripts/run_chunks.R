@@ -1,10 +1,10 @@
 # Run named R chunks of manuscript.qmd in order, from the repository root, the way a
 # render would, without rendering. Use for checking a chunk after an edit.
-#   Rscript 01.manuscript/_tools/run_chunks.R setup extents studyarea-context
+#   Rscript 05.scripts/run_chunks.R setup extents studyarea-context
 # Chunk flags such as eval: false are ignored, so a named chunk always runs.
 # POST, if set, is R code evaluated after the last chunk, for printing a result.
-setwd(normalizePath(file.path(dirname(sub("^--file=", "", grep("^--file=", commandArgs(), value = TRUE))), "../..")))
-src <- readLines("01.manuscript/manuscript.qmd")
+setwd(normalizePath(file.path(dirname(sub("^--file=", "", grep("^--file=", commandArgs(), value = TRUE))), "..")))
+src <- readLines(Sys.getenv("QMD", "01.manuscript/manuscript-jars.qmd"))  # QMD=01.manuscript/manuscript-forestry.qmd runs the Forestry copy
 op <- grep("^```\\{r", src); cl <- grep("^```\\s*$", src)
 chunks <- lapply(op, function(o) { e <- cl[cl > o][1]; body <- src[(o + 1):(e - 1)]
   lab <- sub("^#\\|\\s*label:\\s*", "", grep("^#\\|\\s*label:", body, value = TRUE))

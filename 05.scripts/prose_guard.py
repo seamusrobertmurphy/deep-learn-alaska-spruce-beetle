@@ -14,7 +14,7 @@ import os
 import re
 import sys
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 QMD = os.path.join(ROOT, "01.manuscript", "manuscript.qmd")
 STORE = os.path.join(os.path.dirname(__file__), ".prose_guard.json")
 

@@ -24,9 +24,9 @@ Every check here must be proven able to fail before it is trusted. Run
 fires. A check that has only ever passed has not been tested.
 
 Usage
-    python3 01.manuscript/_tools/eval.py                 run all checks
-    python3 01.manuscript/_tools/eval.py --baseline      record a new baseline
-    python3 01.manuscript/_tools/eval.py --attack        prove each check fails
+    python3 05.scripts/eval.py                 run all checks
+    python3 05.scripts/eval.py --baseline      record a new baseline
+    python3 05.scripts/eval.py --attack        prove each check fails
 """
 
 import argparse
@@ -42,7 +42,7 @@ import sys
 import warnings
 from datetime import datetime, timezone
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 BASELINE = os.path.join(ROOT, "03.outputs", "eval-baseline.json")
 REPORT_DIR = os.path.join(ROOT, "03.outputs", "eval")
 
