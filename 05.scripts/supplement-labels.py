@@ -1,7 +1,7 @@
 """Closes the space Quarto puts between the supplement's label word and its number, so that Table S 1 reads Table S1 and Figure S 1 reads Figure S1.
 
 Run on the rendered supplement after the render:
-  python3 _tools/supplement-labels.py supplementary.docx
+  python3 ../05.scripts/supplement-labels.py supplementary-2026-11-05.docx
 
 Quarto's crossref options tbl-title and fig-title set the words Table S and Figure S, and it then adds a non-breaking space before the number. The journal's own numbering is S1, so the space is removed in the Word XML, both when it sits in the same run as the label and when Quarto split it into its own run.
 """

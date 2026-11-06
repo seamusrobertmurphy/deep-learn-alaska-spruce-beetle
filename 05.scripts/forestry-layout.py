@@ -1,8 +1,8 @@
 """Lays a rendered Word manuscript out as Forestry's general instructions ask.
 
 Run on the rendered file after the render and before landscape-tables.py:
-  python3 _tools/forestry-layout.py manuscript_submission.docx
-  python3 _tools/forestry-layout.py --inline manuscript_review01.docx
+  python3 ../05.scripts/forestry-layout.py manuscript-forestry-2026-10-19.docx
+  python3 ../05.scripts/forestry-layout.py --inline manuscript-forestry-YYYY-MM-DD.docx
 
 With --inline the tables and figures stay where Quarto put them and no margin note is written, which is what the
 editorial office asked for on 23 October 2026 for the initial submission ("your tables and figures must be displayed

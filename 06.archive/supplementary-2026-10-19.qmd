@@ -1,6 +1,6 @@
 ---
 title: "Supplementary material"
-author: "A pre-outbreak map of spruce beetle susceptibility across Alaska from Sentinel-1 radar backscatter. Seamus Murphy, TÜV SÜD, 2187 Comox Ave, Comox, British Columbia V9M 1P5, Canada. seamusrobertmurphy@gmail.com."
+author: "A spruce beetle susceptibility map of Alaska using Sentinel-1 radar and crown-scale mortality data. Seamus Murphy, TÜV SÜD, 2187 Comox Ave, Comox, British Columbia V9M 1P5, Canada. seamusrobertmurphy@gmail.com."
 format:
   docx:
     reference-doc: ../04.references/style-forestry.docx

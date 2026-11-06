@@ -10,7 +10,7 @@ from the Supplementary material heading onward are excluded. The abstract is
 counted and reported on its own line, because the journal bounds it separately
 at 150 to 250 words.
 
-    python3 01.manuscript/_tools/word_count.py
+    python3 05.scripts/word_count.py
 """
 import os
 import re
@@ -18,7 +18,7 @@ import sys
 
 from bs4 import BeautifulSoup
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 PAGE = os.path.join(ROOT, "01.manuscript", "manuscript.html")
 
 EXCLUDE_TAGS = ("figure", "figcaption", "table", "nav", "script", "style")

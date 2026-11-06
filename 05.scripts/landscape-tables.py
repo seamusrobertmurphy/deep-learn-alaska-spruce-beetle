@@ -1,7 +1,7 @@
 """Turns the page of every captioned table in a rendered Word manuscript to landscape, leaving the other pages portrait.
 
 Run on the rendered file after the render:
-  python3 _tools/landscape-tables.py manuscript_submission.docx
+  python3 ../05.scripts/landscape-tables.py manuscript-jars-2026-11-06.docx
 
 Quarto's own landscape block was not used, because it sets A4 paper and leaves the section before each table
 without the template's line numbers and footers. This copies the document's final section settings instead,

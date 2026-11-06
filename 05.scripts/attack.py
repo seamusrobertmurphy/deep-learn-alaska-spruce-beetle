@@ -7,7 +7,7 @@ reports a failure, then restores the artefact and verifies the restoration by
 hash. Anything that cannot be broken reversibly is attacked on a copy instead.
 
 Run through the eval, not directly:
-    python3 01.manuscript/_tools/eval.py --attack
+    python3 05.scripts/eval.py --attack
 """
 
 import hashlib

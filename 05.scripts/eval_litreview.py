@@ -4,7 +4,7 @@
 Written 2026-09-09 from Seamus's standing rules. A review that passes this is
 not necessarily good, but a review that fails it is not issuable.
 
-    python3 01.manuscript/_tools/eval_litreview.py <findings.md> <screening.csv>
+    python3 05.scripts/eval_litreview.py <findings.md> <screening.csv>
 """
 import csv
 import re
@@ -13,7 +13,7 @@ import sys
 import urllib.request
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 BIB = ROOT / "04.references" / "references.bib"
 UA = "alaska-spruce-beetle-susceptibility-map/1.0 (mailto:seamusrobertmurphy@gmail.com)"
 # Both vocabularies seen in practice. The gate must match what reviewers
