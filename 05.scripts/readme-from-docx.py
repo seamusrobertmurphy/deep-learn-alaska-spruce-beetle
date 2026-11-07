@@ -1,19 +1,14 @@
-"""Builds README.md from the laid-out submission manuscript, so that the README's title, abstract, tables, figures and
-data availability statement are the rendered manuscript's and cannot drift from it.
+"""Builds README.md from the laid-out manuscript and supplement, so that the README's title, abstract, figures, tables
+and supplementary material are the rendered manuscript's and cannot drift from it. Nothing else goes into the README.
 
-  python3 ../05.scripts/readme-from-docx.py ../03.outputs/submission/manuscript.docx ../03.outputs/submission/supplementary_material.docx ../README.md
+  cd 01.manuscript && python3 ../05.scripts/readme-from-docx.py manuscript-jars-YYYY-MM-DD.docx supplementary-YYYY-MM-DD.docx ../README.md
 
-Tables become GitHub pipe tables with the caption above, figures become the PNG copies in 03.outputs/figures at full
-width with the caption below, and asterisks and pipes in cell text are escaped so GitHub does not read them as markup.
+Each figure image is copied out of the Word file to 03.outputs/figures/figure<n>.png or figureS<n>.png and shown at
+full width with its caption below. Tables become GitHub pipe tables with the caption above, and asterisks and pipes in
+cell text are escaped so GitHub does not read them as markup. The equation grids are not tables and are left out.
 GitHub sizes a table to its content and ignores width attributes, so no width is set on a table.
 """
-import html, re, sys, zipfile
-
-W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-
-def blocks(path):
-    x = zipfile.ZipFile(path).read("word/document.xml").decode("utf8").split("<w:body>")[1]
-    return re.findall(r"<w:tbl>.*?</w:tbl>|<w:p[ >].*?</w:p>", x, re.S)
+import html, os, re, sys, zipfile
 
 def esc(s):
     return s.replace("\\", "\\\\").replace("*", "\\*").replace("|", "\\|").replace("<", "&lt;")
@@ -36,28 +31,45 @@ def style(p):
     m = re.search(r'<w:pStyle w:val="([^"]*)"', p); return m.group(1) if m else ""
 
 def label(cap):
-    return re.sub(r"^(Table|Figure)[\s ]+(S?\d+)\.", r"**\1 \2.**", cap)
+    return re.sub(r"^(Table|Figure)\s+(S?\d+)(\.?)", r"**\1 \2\3**", cap)
 
 def parse(path):
+    """The file's paragraphs, tables and images in reading order."""
+    z = zipfile.ZipFile(path)
+    rels = {}
+    for r in re.findall(r"<Relationship\b[^>]*>", z.read("word/_rels/document.xml.rels").decode("utf8")):
+        i, t = re.search(r'\bId="([^"]+)"', r), re.search(r'\bTarget="([^"]+)"', r)
+        if i and t: rels[i.group(1)] = t.group(1)
+    body = z.read("word/document.xml").decode("utf8").split("<w:body>")[1]
     items = []
-    for b in blocks(path):
-        if b.startswith("<w:tbl>"):
-            paras = re.findall(r"<w:p[ >].*?</w:p>", b, re.S)
-            cap = [ptext(p) for p in paras if style(p) == "ImageCaption"]
-            if "<w:drawing>" in b:
-                items.append(("figure", cap[0] if cap else ""))
-                continue
-            rows = []
-            for tr in re.findall(r"<w:tr[ >].*?</w:tr>", b, re.S):
-                cells = []
-                for tc in re.findall(r"<w:tc>.*?</w:tc>", tr, re.S):
-                    ps = [ptext(p) for p in re.findall(r"<w:p[ >].*?</w:p>", tc, re.S) if style(p) != "ImageCaption"]
-                    cells.append("<br>".join(p for p in ps if p))
-                rows.append(cells)
-            items.append(("table", cap[0] if cap else "", rows))
+    for b in re.findall(r"<w:tbl\b[^>]*>.*?</w:tbl>|<w:p[ >].*?</w:p>", body, re.S):
+        if b.startswith("<w:tbl"):
+            assert not re.search(r"<w:tbl\b", b[1:]), f"{path}: a table inside a table; run jars-layout.py on the file first"
+            if "<m:oMath" in b: continue  # an equation grid
+            rows = [["<br>".join(t for t in (ptext(p) for p in re.findall(r"<w:p[ >].*?</w:p>", tc, re.S)) if t)
+                     for tc in re.findall(r"<w:tc[ >].*?</w:tc>", tr, re.S)]
+                    for tr in re.findall(r"<w:tr[ >].*?</w:tr>", b, re.S)]
+            items.append(("table", rows))
+        elif "<w:drawing>" in b:
+            items.append(("image", [z.read("word/" + rels[i]) for i in re.findall(r'r:embed="([^"]+)"', b)]))
         else:
             items.append(("p", style(b), ptext(b)))
     return items
+
+def figures_and_tables(items, path):
+    figs, tabs, cap = [], [], None
+    for k, o in enumerate(items):
+        if o[0] == "p" and o[1] == "ImageCaption" and o[2].startswith("Table"):
+            cap = o[2]
+        elif o[0] == "table":
+            assert cap, f"{path}: a table with no caption above it"
+            tabs.append((cap, o[1])); cap = None
+        elif o[0] == "image":
+            nxt = next((p for p in items[k + 1:] if p[0] != "p" or p[2]), None)
+            assert nxt and nxt[0] == "p" and nxt[1] == "ImageCaption" and nxt[2].startswith("Figure"), f"{path}: a figure with no caption below it"
+            assert len(o[1]) == 1 and o[1][0][:4] == b"\x89PNG", f"{path}: a figure that is not one PNG image"
+            figs.append((nxt[2], o[1][0]))
+    return figs, tabs
 
 def gfm_table(rows):
     n = max(len(r) for r in rows)
@@ -67,36 +79,29 @@ def gfm_table(rows):
     return "\n".join([head, sep] + ["| " + " | ".join(r) + " |" for r in rows[1:]])
 
 main, supp, dst = sys.argv[1:4]
-m = parse(main); s = parse(supp)
+m, s = parse(main), parse(supp)
 title = next(o[2] for o in m if o[0] == "p" and o[1] == "Title")
-h1 = [i for i, o in enumerate(m) if o[0] == "p" and o[1] == "Heading1"]
-def section(name):
-    i = next(i for i in h1 if m[i][2].strip() == name)
-    j = i + 1; out = []
-    while j < len(m) and not (m[j][0] == "p" and m[j][1] == "Heading1"):
-        if m[j][0] == "p" and m[j][2]: out.append(m[j][2])
-        j += 1
-    return out
-abstract = " ".join(section("Abstract"))
-avail = " ".join(section("Data availability statement"))
-tables = [o for o in m if o[0] == "table"]
-figures = [o for o in m if o[0] == "figure"]
+abstract = " ".join(o[2] for o in m if o[0] == "p" and o[1] == "Abstract" and o[2])
+assert abstract, f"{main}: no paragraph in the Abstract style"
+figs, tabs = figures_and_tables(m, main)
+sfigs, stabs = figures_and_tables(s, supp)
 supp_text = [o[2] for o in s if o[0] == "p" and o[1] in ("BodyText", "FirstParagraph") and o[2] and not o[2].startswith("Alt text")]
-supp_fig = [o for o in s if o[0] == "figure"]
 
-L = [f"# {title}", "",
-     "Manuscript prepared for submission to Forestry, An International Journal of Forest Research. The text, tables and figures below are read from the rendered manuscript of 2026-10-19, so they match it word for word and number for number.", "",
-     "## Abstract", "", abstract, "", "## Figures", ""]
-for n, (_, cap) in enumerate(figures, 1):
-    L += [f'<img src="03.outputs/figures/figure{n}.png" width="100%" alt="Figure {n}">', "", label(cap), ""]
+fig_dir = os.path.join(os.path.dirname(os.path.abspath(dst)), "03.outputs", "figures")
+def show(name, cap, png):
+    open(os.path.join(fig_dir, name + ".png"), "wb").write(png)
+    return [f'<img src="03.outputs/figures/{name}.png" width="100%" alt="{name.replace("figure", "Figure ")}">', "", label(cap), ""]
+
+L = [f"# {title}", "", "## Abstract", "", abstract, "", "## Figures", ""]
+for n, (cap, png) in enumerate(figs, 1):
+    L += show(f"figure{n}", cap, png)
 L += ["## Tables", ""]
-for _, cap, rows in tables:
+for cap, rows in tabs:
     L += [label(cap), "", gfm_table(rows), ""]
-L += ["## Supplementary material", "", " ".join(supp_text), ""]
-for n, (_, cap) in enumerate(supp_fig, 1):
-    L += [f'<img src="03.outputs/figures/figureS{n}.png" width="100%" alt="Figure S{n}">', "", label(cap), ""]
-L += ["## Data availability", "", avail, "",
-      "## Reproduction", "",
-      "The manuscript is executable. Every number, table and figure is computed at render time from `01.manuscript/manuscript.qmd` and the saved outputs in `03.outputs/`, and the heavy chunks are guarded so that a render reads their saved outputs rather than recomputing them. Render with `quarto render manuscript.qmd --to docx` from inside `01.manuscript/`. The inputs, their sources and their licences are recorded in `02.inputs/README.md`; the large rasters and the Sentinel-1 samples are not committed and are regenerable from the chunks that built them. R is the CRAN build at `/usr/local/bin/R` and Python is MacPorts `python3` 3.12.", ""]
-open(dst, "w", encoding="utf8").write("\n".join(L))
-print(f"{dst}: {len(tables)} tables, {len(figures)} figures, {len(supp_fig)} supplementary figure, abstract {len(abstract.split())} words")
+L += ["## Supplementary material", "", *[t + "\n" for t in supp_text]]
+for n, (cap, png) in enumerate(sfigs, 1):
+    L += show(f"figureS{n}", cap, png)
+for cap, rows in stabs:
+    L += [label(cap), "", gfm_table(rows), ""]
+open(dst, "w", encoding="utf8").write("\n".join(L).rstrip("\n") + "\n")
+print(f"{dst}: {len(tabs)} tables, {len(figs)} figures, {len(sfigs)} supplementary figures, {len(stabs)} supplementary tables, abstract {len(abstract.split())} words")
