@@ -18,6 +18,10 @@ In Alaska, outbreaks of the spruce beetle, *Dendroctonus rufipennis* (Kirby), ki
 
 **Figure 3** The statewide susceptibility map at 1 km, the mean of the 90 m product over the forest cells of each 1 km cell. Left, the slope-corrected Sentinel-1 VV level of October 2014 to December 2016 brought to a 38 degree incidence angle; right, the ETH canopy height of 2020. Cells with less than a fifth of their area in forest are blank. Black outlines are the four test regions and the blue frame the validation strip.
 
+<img src="03.outputs/figures/figureS1.png" width="100%" alt="Figure S1">
+
+**Figure S1.** Area of spruce beetle damage mapped by the aerial detection survey across Alaska in each survey year, by quarter-degree band of latitude, on a square-root colour scale; the dashed lines bound the latitudes of the frame of Figure 1 of the main text.
+
 ## Tables
 
 **Table 1.** The measures the study entered, the attribute of the hazard ratings each stands for, the direction expected in the stands an outbreak killed, and the literature the expectation rests on.
@@ -94,11 +98,3 @@ In Alaska, outbreaks of the spruce beetle, *Dendroctonus rufipennis* (Kirby), ki
 | Matanuska-Susitna | 5 000 | 5 000 | 0.70 | 0.70 | -7.9 | -8.7 | 80 | 48 | -0.23 |
 | Copper River | 1 719 | 5 000 | 0.44 | 0.76 | -10.1 | -10.0 | 1 | 0 | 0.23 |
 | Interior | 5 000 | 2 800 | 0.61 | 0.58 | -8.6 | -8.9 | 40 | 27 | -0.02 |
-
-## Supplementary material
-
-Across Alaska, the survey mapped the most spruce beetle damage in 2021, 240 969 ha, and the least in 2014, 5 987 ha. Of the area mapped from 2016 to 2024, 85 per cent lay north of 61° N, against 38 per cent of the area mapped from 1997 to 2015 (Figure S1).
-
-<img src="03.outputs/figures/figureS1.png" width="100%" alt="Figure S1">
-
-**Figure S1.** Area of spruce beetle damage mapped by the aerial detection survey across Alaska in each survey year, by quarter-degree band of latitude, on a square-root colour scale; the dashed lines bound the latitudes of the frame of Figure 1 of the main text.

@@ -1,5 +1,6 @@
-"""Builds README.md from the laid-out manuscript and supplement, so that the README's title, abstract, figures, tables
-and supplementary material are the rendered manuscript's and cannot drift from it. Nothing else goes into the README.
+"""Builds README.md from the laid-out manuscript and supplement, so that the README's title, abstract, figures and
+tables are the rendered manuscript's and cannot drift from it. Nothing else goes into the README, so the supplement
+gives only its figures and tables, after those of the main text, and none of its paragraphs.
 
   cd 01.manuscript && python3 ../05.scripts/readme-from-docx.py manuscript-jars-YYYY-MM-DD.docx supplementary-YYYY-MM-DD.docx ../README.md
 
@@ -85,7 +86,6 @@ abstract = " ".join(o[2] for o in m if o[0] == "p" and o[1] == "Abstract" and o[
 assert abstract, f"{main}: no paragraph in the Abstract style"
 figs, tabs = figures_and_tables(m, main)
 sfigs, stabs = figures_and_tables(s, supp)
-supp_text = [o[2] for o in s if o[0] == "p" and o[1] in ("BodyText", "FirstParagraph") and o[2] and not o[2].startswith("Alt text")]
 
 fig_dir = os.path.join(os.path.dirname(os.path.abspath(dst)), "03.outputs", "figures")
 def show(name, cap, png):
@@ -95,13 +95,10 @@ def show(name, cap, png):
 L = [f"# {title}", "", "## Abstract", "", abstract, "", "## Figures", ""]
 for n, (cap, png) in enumerate(figs, 1):
     L += show(f"figure{n}", cap, png)
-L += ["## Tables", ""]
-for cap, rows in tabs:
-    L += [label(cap), "", gfm_table(rows), ""]
-L += ["## Supplementary material", "", *[t + "\n" for t in supp_text]]
 for n, (cap, png) in enumerate(sfigs, 1):
     L += show(f"figureS{n}", cap, png)
-for cap, rows in stabs:
+L += ["## Tables", ""]
+for cap, rows in tabs + stabs:
     L += [label(cap), "", gfm_table(rows), ""]
 open(dst, "w", encoding="utf8").write("\n".join(L).rstrip("\n") + "\n")
 print(f"{dst}: {len(tabs)} tables, {len(figs)} figures, {len(sfigs)} supplementary figures, {len(stabs)} supplementary tables, abstract {len(abstract.split())} words")
