@@ -1,0 +1,82 @@
+---
+title: "Supplementary material"
+author: "A pre-outbreak map of spruce beetle susceptibility across Alaska from Sentinel-1 radar backscatter. Seamus Murphy, TÜV SÜD, 2187 Comox Ave, Comox, British Columbia V9M 1P5, Canada. seamusrobertmurphy@gmail.com."
+format:
+  docx:
+    reference-doc: ../04.references/style-forestry-template.docx
+    fig-dpi: 500
+bibliography: ../04.references/references.bib
+csl: ../04.references/forestry-scimed.csl
+engine: knitr
+execute:
+  echo: true
+  warning: false
+  message: false
+crossref:
+  title-delim: "."
+  tbl-title: "Table S"
+  tbl-prefix: "Table S"
+  fig-title: "Figure S"
+  fig-prefix: "Figure S"
+---
+
+```{r}
+#| label: supp-setup
+#| echo: true
+#| output: false
+# The Forestry supplement of manuscript-forestry-new-2026-11-13.qmd; supplementary.qmd stays the supplement of the Journal of Applied Remote Sensing version.
+library(ggplot2)
+knitr::opts_knit$set(root.dir = here::here())  # paths from the repository root, as in the manuscript
+```
+
+```{r}
+#| label: fig-processing
+#| echo: true
+#| fig-cap: "Processing chain of each Sentinel-1 GRD scene, in the order applied, from the orbit file to the temporal mean backscatter."
+#| fig-width: 6.299
+#| fig-height: 1.870
+#| dev: ragg_png
+# Row 1 is the preprocessing of every COPERNICUS/S1_GRD scene with ESA's Sentinel-1 Toolbox (Vollrath et al. 2020, p. 3); row 2 is the
+# processing of the manuscript's code in the order it was computed, the 90 m read first because the statewide chunk requests every step at
+# 90 m. Terms checked against the literature in 05.tasks/session-4/flowchart-terms-sar.md.
+who <- "COPERNICUS/S1_GRD, preprocessed with ESA's Sentinel-1 Toolbox (S1TBX)"  # labels row 1 only
+st <- tibble::tibble(
+  lab = c("Orbit file\napplied", "Thermal noise removal\n(from July 2015)", "Radiometric\ncalibration to σ⁰", "Range-Doppler\nterrain correction",
+    "Read at 90 m\n(image pyramid)", "Additional border\nnoise correction", "Radiometric slope\ncorrection to γ⁰,\nvolume scattering\nmodel, layover and\nshadow masked",
+    "Incidence angle\nnormalization\nto 38°", "Temporal mean\nin linear power,\nthen dB"),
+  row = rep(1:2, c(4, 5))) |>
+  dplyr::mutate(k = dplyr::row_number(), n = dplyr::n(), .by = row) |>
+  dplyr::mutate(w = (15.9 - (n - 1) * 0.4) / n, x0 = 0.05 + (k - 1) * (w + 0.4), x1 = x0 + w, y0 = ifelse(row == 1, 2.95, 0.6), y1 = ifelse(row == 1, 4.35, 2.35),
+    line = ifelse(row == 2, "#2563EB", "#64748B"))  # the blue of the radar and the slate of the benchmarks in Figure 2
+gr <- dplyr::summarise(dplyr::filter(st, row == 1), x0 = min(x0), x1 = max(x1))  # the span of the toolbox steps
+step <- dplyr::filter(st, k < n)  # the arrows inside each row
+turn <- data.frame(x = c((st$x0[4] + st$x1[4]) / 2, (st$x0[4] + st$x1[4]) / 2, (st$x0[5] + st$x1[5]) / 2, (st$x0[5] + st$x1[5]) / 2), y = c(2.95, 2.65, 2.65, 2.35))  # row 1 into row 2
+f <- 8 / .pt
+ggplot() +
+  geom_segment(data = step, aes(x = x1, xend = x1 + 0.4, y = (y0 + y1) / 2, yend = (y0 + y1) / 2), linewidth = 0.35, colour = "grey15", arrow = arrow(length = unit(1.2, "mm"), type = "closed")) +
+  geom_path(data = turn, aes(x, y), linewidth = 0.35, colour = "grey15", arrow = arrow(length = unit(1.2, "mm"), type = "closed")) +
+  geom_rect(data = st, aes(xmin = x0, xmax = x1, ymin = y0, ymax = y1, colour = I(line)), fill = "white", linewidth = 0.5) +
+  geom_text(data = st, aes((x0 + x1) / 2, (y0 + y1) / 2, label = lab), size = f, lineheight = 0.9, family = "Arial") +
+  annotate("segment", x = gr$x0, xend = gr$x1, y = 4.5, yend = 4.5, linewidth = 0.5, colour = "#64748B") +
+  annotate("text", x = (gr$x0 + gr$x1) / 2, y = 4.75, label = who, size = f, fontface = "italic", family = "Arial") +
+  coord_fixed(xlim = c(0, 16), ylim = c(0.35, 5.1), expand = FALSE) + theme_void(base_family = "Arial")
+```
+
+Alt text: Two rows of nine boxes in processing order, the four Sentinel-1 Toolbox steps on top and five later steps below.
+
+```{r}
+#| label: tbl-coverage
+#| echo: true
+#| tbl-cap: "Survey coverage and scores of the four survey regions. The Copper River basin was set apart from the test of the second hypothesis, because the survey flew over its cells in one or two of the nine years from 2016 to 2024. Years flown is the median count over the sampled cells of each class. AUC is the area under the curve for ranking dead above living, with Sentinel-2 red scored on the cells with a clear day."
+# Read from the tables the manuscript's chunks save, so the supplement renders after the manuscript.
+ra <- as.matrix(read.csv("03.outputs/statewide_regions.csv", row.names = 1)); sc <- as.matrix(read.csv("03.outputs/survey_coverage.csv", row.names = 1))
+op <- as.matrix(read.csv("03.outputs/optical_regions.csv", row.names = 1)); nd <- as.matrix(read.csv("03.outputs/nidrm_comparison.csv", row.names = 1))
+rg <- c(kenai = "Kenai Peninsula", matsu = "Matanuska-Susitna Borough", interior = "Interior", copper = "Copper River basin, set apart")
+tb <- data.frame(Region = unname(rg), Dead = format(ra["dead", names(rg)], big.mark = "\u2009"), Living = format(ra["living", names(rg)], big.mark = "\u2009"),
+  `Years flown, dead` = sprintf("%g", sc["years_flown_attacked", names(rg)]), `Years flown, living` = sprintf("%g", sc["years_flown_unattacked", names(rg)]),
+  `AUC, VV` = sprintf("%.2f", ra["AUC_VV", names(rg)]), `AUC, red` = sprintf("%.2f", op["AUC_red", names(rg)]), `AUC, hazard map` = sprintf("%.2f", nd["AUC_loss", names(rg)]),
+  check.names = FALSE)
+ft <- flextable::flextable(tb) |> flextable::fontsize(size = 11, part = "all") |> flextable::align(align = "center", part = "header") |>
+  flextable::align(j = 2:8, align = "right", part = "body") |> flextable::padding(padding.top = 1, padding.bottom = 1, part = "all")
+flextable::set_table_properties(ft, layout = "autofit", width = 1)
+```
