@@ -1,12 +1,12 @@
 # Spruce beetle susceptibility map of Alaska
 
-A 90 m map of the spruce stands most at risk in the next spruce beetle outbreak, for forest managers. Version 1.0, built 18 October 2026 from the code in the manuscript "A spruce beetle susceptibility map of Alaska using Sentinel-1 radar and crown-scale mortality data in the Susitna valley" (Murphy, 2026, submitted to Ecological Indicators). The code that made every file here is in the manuscript, in the `statewide` and `statewide-release` chunks of `01.manuscript/manuscript.qmd` at https://github.com/seamusrobertmurphy/alaska-spruce-beetle-susceptibility-map.
+A 90 m map of the spruce stands most at risk in the next spruce beetle outbreak, for forest managers. Version 1.0, built 18 November 2026 from the code in the manuscript "A spruce beetle susceptibility map of Alaska using Sentinel-1 radar and crown-scale mortality data in the Susitna valley" (Murphy, 2026, submitted to Ecological Indicators). The code that made every file here is in the manuscript, in the `statewide` and `statewide-release` chunks of `01.manuscript/manuscript.qmd` at https://github.com/seamusrobertmurphy/alaska-spruce-beetle-susceptibility-map.
 
 ## What it shows
 
-Spruce beetle outbreaks in Alaska kill the largest spruce first, so the tallest stands of large spruce are the ones most at risk. Radar backscatter measures stand height. Every Sentinel-1 radar scene over Alaska from October 2014 to December 2016, before the current outbreak reached the Susitna valley, was pooled into one map of pre-outbreak backscatter. Where that backscatter is at or above -8.44 dB, the stand is classed susceptible. The threshold was set on 34,990 dead and 6,774 living forest cells of the Zwieback et al. (2024) severity map of the Susitna valley, where it classed 91 per cent of the killed stands and 76 per cent of the spared stands correctly, an overall accuracy of 89 per cent (area under the curve 0.86, Cohen's kappa 0.61). Against the aerial detection survey the map ranked attacked above unattacked forest with an area under the curve of 0.70 on the Kenai Peninsula and 0.70 in the Matanuska-Susitna Borough, 0.61 in the Interior, and 0.44 in the Copper River basin, where the stands are short and open and the map should not be used; the canopy height band ranks them there instead.
+Spruce beetle outbreaks in Alaska kill the largest spruce first, so the tallest stands of large spruce are the ones most at risk. Radar backscatter measures stand height. Every Sentinel-1 radar scene over Alaska from October 2014 to December 2016, before the current outbreak reached the Susitna valley, was pooled into one map of pre-outbreak backscatter. Where that backscatter is at or above -8.24 dB, the stand is classed susceptible. The threshold was set on 34 175 dead and 6 747 living forest cells of the Zwieback et al. (2024) severity map of the Susitna valley, where it classed 88 per cent of the killed stands and 78 per cent of the spared stands correctly, an overall accuracy of 87 per cent (area under the curve 0.87, Cohen's kappa 0.58). Against the aerial detection survey the map ranked attacked above unattacked forest with an area under the curve of 0.71 on the Kenai Peninsula and 0.72 in the Matanuska-Susitna Borough, 0.60 in the Interior, and 0.37 in the Copper River basin, where the stands are short and open and the map should not be used; the canopy height band ranks them there instead.
 
-Across 906,521 km² of forest in Alaska, 29 per cent is at or above the threshold, 62 per cent on the Kenai Peninsula, 48 in the Matanuska-Susitna Borough, 50 in the Valdez-Cordova census area and 27 in the Interior.
+Across 446 963 km² of forest in Alaska, 18 per cent is at or above the threshold, 60 per cent on the Kenai Peninsula, 47 in the Matanuska-Susitna Borough, 29 in the Valdez-Cordova census area and 14 in the Interior.
 
 The map is of stand structure, not of beetles. It says which stands are tall and large, the kind the beetle has killed first in every recorded Alaska outbreak, and it has been validated only where the beetle has been. It is the hazard half of a stand rating, to be read with the beetle's current position from the aerial detection survey.
 
@@ -14,13 +14,13 @@ The map is of stand structure, not of beetles. It says which stands are tall and
 
 | File | Contents |
 |---|---|
-| `spruce_susceptibility_alaska_90m_class.tif` | The map managers need. One band, 8-bit, values 1 to 4 (see below), 0 outside Alaska. 29 MB. |
-| `spruce_susceptibility_alaska_90m.tif` | The four measured bands behind it, so that you can set your own threshold. 16-bit integers at 100 times the value, with the scale factor 0.01 written into the file. 859 MB. |
+| `spruce_susceptibility_alaska_90m_class.tif` | The map managers need. One band, 8-bit, values 1 to 4 (see below), 0 outside Alaska. 17 MB. |
+| `spruce_susceptibility_alaska_90m.tif` | The four measured bands behind it, so that you can set your own threshold. 16-bit integers at 100 times the value, with the scale factor 0.01 written into the file. 309 MB. |
 | `spruce_susceptibility_alaska_90m_class.qml` | A QGIS style for the class map, with the legend below. |
 | `README.md` | This file. |
 | `LICENSE.txt` | CC BY 4.0. |
 
-Both GeoTIFFs are Cloud Optimized GeoTIFFs with internal overviews, on the Alaska Albers projection (EPSG:3338), 90 m cells, 29,376 columns by 23,500 rows, with the top left corner at x = -1,040,580, y = 2,557,800 metres. They open directly in QGIS, ArcGIS Pro, R and Python with their projection.
+Both GeoTIFFs are Cloud Optimized GeoTIFFs with internal overviews, on the Alaska Albers projection (EPSG:3338), 90 m cells, 29 376 columns by 23 500 rows, with the top left corner at x = -1 040 580, y = 2 557 800 metres. They open directly in QGIS, ArcGIS Pro, R and Python with their projection.
 
 Class values in `spruce_susceptibility_alaska_90m_class.tif`:
 
@@ -28,20 +28,20 @@ Class values in `spruce_susceptibility_alaska_90m_class.tif`:
 |---|---|
 | 0 | Outside Alaska (no data) |
 | 1 | No forest, a 90 m cell with no 10 m cell of 5 m canopy height or more |
-| 2 | Forest below the threshold, backscatter under -8.44 dB |
-| 3 | Susceptible, forest with backscatter at or above -8.44 dB, the tall large-spruce stands |
+| 2 | Forest below the threshold, backscatter under -8.24 dB |
+| 3 | Susceptible, forest with backscatter at or above -8.24 dB, the tall large-spruce stands |
 | 4 | Forest that no radar scene covered in October 2014 to December 2016 |
 
 Bands in `spruce_susceptibility_alaska_90m.tif`, every one stored as an integer at 100 times the value, with no data as -32768 where the cell holds no forest or lies outside Alaska:
 
 | Band | Name | Meaning | Real unit |
 |---|---|---|---|
-| 1 | VV | Mean Sentinel-1 VV backscatter, October 2014 to December 2016, slope corrected and brought to a 38 degree incidence angle (-0.125 dB per degree), averaged in linear power over every scene | decibels, divide by 100 |
+| 1 | VV | Mean Sentinel-1 VV backscatter, October 2014 to December 2016, slope corrected and brought to a 38 degree incidence angle (-0.003 dB per degree), averaged in linear power over every scene | decibels, divide by 100 |
 | 2 | scenes | Number of scenes averaged in the cell (median 57) | count, divide by 100 |
 | 3 | height | Mean ETH Zurich canopy height of 2020 of the 10 m cells | metres, divide by 100 |
 | 4 | forest | Share of the 90 m cell whose 10 m cells have canopy height of 5 m or more | fraction, divide by 100 |
 
-QGIS, ArcGIS Pro and rasterio read the scale factor and show the real units. Plain array reads give the stored integers, so divide by 100. A cell is susceptible where band 1 is at or above -844 (that is -8.44 dB) and band 4 is above 0. The same rule on the height band, 17.4 m, gave the height version of the map in the manuscript.
+QGIS, ArcGIS Pro and rasterio read the scale factor and show the real units. Plain array reads give the stored integers, so divide by 100. A cell is susceptible where band 1 is at or above -824 (that is -8.24 dB) and band 4 is above 0. The same rule on the height band, {{thr_height}} m, gave the height version of the map in the manuscript.
 
 ## Opening it
 
@@ -69,8 +69,8 @@ with rasterio.open("spruce_susceptibility_alaska_90m.tif") as src:
 Google Earth Engine. Both layers are public assets, so no download is needed.
 
 ```js
-var full = ee.Image("projects/vvb-checks/assets/spruce_susceptibility_alaska_90m");  // four Int16 bands at 100 times the value
-var cls = ee.Image("projects/vvb-checks/assets/spruce_susceptibility_alaska_90m_class");  // one Byte band, classes 1 to 4 as above
+var full = ee.Image("projects/manuscripts-personal/assets/spruce_susceptibility_alaska_90m_v4");  // four Int16 bands at 100 times the value
+var cls = ee.Image("projects/manuscripts-personal/assets/spruce_susceptibility_alaska_90m_class_v4");  // one Byte band, classes 1 to 4 as above
 Map.addLayer(cls, {min: 1, max: 4, palette: ["f0f0f0", "a1d99b", "d7301f", "9e9ac8"]}, "Susceptibility class");
 Map.addLayer(full.select("VV").divide(100), {min: -12, max: -6}, "VV (dB)");
 ```
