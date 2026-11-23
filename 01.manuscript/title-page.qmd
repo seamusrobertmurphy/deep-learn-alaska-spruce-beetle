@@ -6,7 +6,7 @@ format:
 engine: knitr
 ---
 
-**Predicting spruce beetle susceptibility across Alaska from Sentinel-1 radar backscatter**
+**Predicting spruce beetle stand susceptibility across Alaska from Sentinel-1 radar backscatter**
 
 Seamus Robert Murphy^a,\*^
 

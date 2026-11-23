@@ -1,0 +1,49 @@
+---
+title: ""
+format:
+  docx:
+    reference-doc: ../04.references/style-formal.docx
+engine: knitr
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: letter-numbers
+# Every number below is read from the tables the manuscript writes, under the manuscript's own object names, so the letter cannot disagree with the paper.
+strip_a <- read.csv("../03.outputs/statewide_strip.csv")
+struct <- as.matrix(read.csv("../03.outputs/landscape_structure.csv", row.names = 1)); land_auc <- as.matrix(read.csv("../03.outputs/landscape_auc.csv", row.names = 1))
+nidrm_cmp <- as.matrix(read.csv("../03.outputs/nidrm_comparison.csv", row.names = 1))
+o1 <- read.csv("../03.outputs/optical_strip.csv")[1:11, ]; rownames(o1) <- o1$source; a2 <- function(r, v = "AUC") sprintf("%.2f", o1[r, v])
+opt_cov <- read.csv("../03.outputs/optical_coverage.csv", row.names = 1); optical_regions <- as.matrix(read.csv("../03.outputs/optical_regions.csv", row.names = 1))
+# The render stops if a direction stated in words below no longer holds in the saved tables.
+stopifnot(o1["B12", "AUC"] < o1["VV_pooled", "AUC"],
+  all(optical_regions["AUC_VV", c("kenai", "matsu")] > optical_regions["AUC_red", c("kenai", "matsu")]))
+```
+
+::: {custom-style="Definition"}
+`r format(Sys.Date(), "%d %B %Y")`\
+Dr Fabian Fassnacht\
+Editor-in-Chief, Forestry, An International Journal of Forest Research
+
+Dear Dr Fassnacht,
+
+Thank you for reading Forestry-2026-310 a second time. This is the new submission you offered on 8 November to consider, titled "Predicting spruce beetle stand susceptibility across Alaska from Sentinel-1 radar backscatter". It asks whether radar recorded before the outbreak ranked the stands the beetle later killed above those it spared, and could predict susceptible stands across Alaska.
+
+On innovation, the map came from radar of October 2014 to December 2016, largely before the outbreak reached the Susitna valley and uninterrupted by cloud. It was tested against the outbreak that followed. On the 2021 severity map, it ranked killed above surviving stands with an area under the curve of `r sprintf("%.2f", strip_a$AUC)`, and overall accuracy was `r sprintf("%.0f", 100 * strip_a$acc_VV)` per cent. Candotti et al. (2026) named a 'lack of remote sensing-assisted large-scale assessments of susceptibility to disturbance', and none of the susceptibility studies they listed used radar.
+
+On comparison, four other sources were scored against the same severity map, as the Comparison subsection of the Methods sets out. PALSAR-2 L-band backscatter gave `r sprintf("%.2f", struct["AUC", "HV_pre"])`, against `r sprintf("%.2f", strip_a$AUC)` for the map. The change in Sentinel-1 backscatter through the outbreak gave `r sprintf("%.2f", land_auc["change", "VV65"])` and `r sprintf("%.2f", land_auc["change", "VV131"])` on the two orbits, so the contrast predated the outbreak. The Forest Service hazard map of 2012 gave `r sprintf("%.2f", nidrm_cmp["AUC_loss", "strip"])`, and the radar map also ranked above it in `r c("none of the", "one of the", "two of the", "all")[1 + sum(nidrm_cmp["AUC_VV", c("kenai", "matsu", "interior")] > nidrm_cmp["AUC_loss", c("kenai", "matsu", "interior")])]` three survey regions.
+
+Sentinel-2 was averaged into the same 90 m cells, since the paper maps stand structure before an attack, not dieback. Band 12 in the shortwave infrared, named the primary Sentinel-2 measure before any scoring, ranked the strip's stands at `r a2("B12")` against `r a2("VV_pooled")` for the radar. Against the aerial survey, the radar ranked higher than Sentinel-2 red on the Kenai Peninsula and in the Matanuska-Susitna Borough. Across Alaska, a forest cell had a median of `r opt_cov["alaska", "clear_median"]` clear Sentinel-2 days in the two summers before the outbreak, against `r opt_cov["alaska", "scenes_median"]` radar scenes.
+
+The Methods now run in five subsections in the order of the workflow, which Figure 2 draws and Table S3 lists step by step. As you suggested, the Results add a bootstrap at equal class sizes and area-weighted accuracy, Figure 3 shows the map, and every table caption defines its abbreviations.
+
+The manuscript is original, has not been published and is not under consideration elsewhere. I am the sole author, I have read and approved it, I have no conflict of interest to declare, and the work received no specific funding.
+
+Yours sincerely,\
+Dr Seamus Murphy\
+TÜV SÜD, 2187 Comox Avenue, Comox, British Columbia V9M 1P5, Canada\
+seamusrobertmurphy@gmail.com, ORCID 0000-0002-1792-0351
+:::

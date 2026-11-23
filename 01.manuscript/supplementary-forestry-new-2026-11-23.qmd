@@ -1,0 +1,229 @@
+---
+title: "Supplementary material"
+author: "Predicting spruce beetle stand susceptibility across Alaska from Sentinel-1 radar backscatter. Seamus Murphy, TÜV SÜD, 2187 Comox Ave, Comox, British Columbia V9M 1P5, Canada. seamusrobertmurphy@gmail.com."
+format:
+  docx:
+    reference-doc: ../04.references/style-forestry-template.docx
+    fig-dpi: 500
+bibliography: ../04.references/references.bib
+csl: ../04.references/forestry-scimed.csl
+engine: knitr
+execute:
+  echo: true
+  warning: false
+  message: false
+crossref:
+  title-delim: "."
+  tbl-title: "Table S"
+  tbl-prefix: "Table S"
+  fig-title: "Figure S"
+  fig-prefix: "Figure S"
+---
+
+```{r}
+#| label: supp-setup
+#| echo: true
+#| output: false
+# The Forestry supplement of manuscript-forestry-new-2026-11-22.qmd; supplementary.qmd stays the supplement of the Journal of Applied Remote Sensing version.
+library(ggplot2)
+knitr::opts_knit$set(root.dir = here::here())  # paths from the repository root, as in the manuscript
+```
+
+```{r}
+#| label: fig-processing
+#| echo: true
+#| fig-cap: "Processing chain of each Sentinel-1 GRD scene, in the order applied, from the orbit file to the temporal mean backscatter."
+#| fig-width: 6.299
+#| fig-height: 1.870
+#| dev: ragg_png
+# Row 1 is the preprocessing of every COPERNICUS/S1_GRD scene with ESA's Sentinel-1 Toolbox (Vollrath et al. 2020, p. 3); row 2 is the
+# processing of the manuscript's code in the order it was computed, the 90 m read first because the statewide chunk requests every step at
+# 90 m. Terms checked against the literature in 05.tasks/session-4/flowchart-terms-sar.md.
+who <- "COPERNICUS/S1_GRD, preprocessed with ESA's Sentinel-1 Toolbox (S1TBX)"  # labels row 1 only
+st <- tibble::tibble(
+  lab = c("Orbit file\napplied", "Thermal noise removal\n(from July 2015)", "Radiometric\ncalibration to σ⁰", "Range-Doppler\nterrain correction",
+    "Aggregated to 80 m,\nnearest neighbour\nresampling to 90 m", "Additional border\nnoise correction", "Radiometric slope\ncorrection to γ⁰,\nvolume scattering\nmodel, layover and\nshadow masked",
+    "Incidence angle\nnormalization\nto 38°", "Temporal mean\nin linear power,\nthen dB"),
+  row = rep(1:2, c(4, 5))) |>
+  dplyr::mutate(k = dplyr::row_number(), n = dplyr::n(), .by = row) |>
+  dplyr::mutate(w = (15.9 - (n - 1) * 0.4) / n, x0 = 0.05 + (k - 1) * (w + 0.4), x1 = x0 + w, y0 = ifelse(row == 1, 2.95, 0.6), y1 = ifelse(row == 1, 4.35, 2.35),
+    line = ifelse(row == 2, "#2563EB", "#64748B"))  # the blue of the radar and the slate of the benchmarks in Figure 2
+gr <- dplyr::summarise(dplyr::filter(st, row == 1), x0 = min(x0), x1 = max(x1))  # the span of the toolbox steps
+step <- dplyr::filter(st, k < n)  # the arrows inside each row
+turn <- data.frame(x = c((st$x0[4] + st$x1[4]) / 2, (st$x0[4] + st$x1[4]) / 2, (st$x0[5] + st$x1[5]) / 2, (st$x0[5] + st$x1[5]) / 2), y = c(2.95, 2.65, 2.65, 2.35))  # row 1 into row 2
+f <- 8 / .pt
+ggplot() +
+  geom_segment(data = step, aes(x = x1, xend = x1 + 0.4, y = (y0 + y1) / 2, yend = (y0 + y1) / 2), linewidth = 0.35, colour = "grey15", arrow = arrow(length = unit(1.2, "mm"), type = "closed")) +
+  geom_path(data = turn, aes(x, y), linewidth = 0.35, colour = "grey15", arrow = arrow(length = unit(1.2, "mm"), type = "closed")) +
+  geom_rect(data = st, aes(xmin = x0, xmax = x1, ymin = y0, ymax = y1, colour = I(line)), fill = "white", linewidth = 0.5) +
+  geom_text(data = st, aes((x0 + x1) / 2, (y0 + y1) / 2, label = lab), size = f, lineheight = 0.9, family = "Arial") +
+  annotate("segment", x = gr$x0, xend = gr$x1, y = 4.5, yend = 4.5, linewidth = 0.5, colour = "#64748B") +
+  annotate("text", x = (gr$x0 + gr$x1) / 2, y = 4.75, label = who, size = f, fontface = "italic", family = "Arial") +
+  coord_fixed(xlim = c(0, 16), ylim = c(0.35, 5.1), expand = FALSE) + theme_void(base_family = "Arial")
+```
+
+Alt text: Two rows of nine boxes in processing order, the four Sentinel-1 Toolbox steps on top and five later steps below.
+
+```{r}
+#| label: tbl-coverage
+#| echo: true
+#| tbl-cap: "Survey coverage and scores of the three survey regions and of the Copper River basin. The basin was set apart from the test of the second hypothesis, because the survey flew over its cells in one or two of the nine years from 2016 to 2024. Years flown is the median count over the sampled cells of each class. AUC is the area under the curve for ranking attacked above unattacked, with Sentinel-2 red scored on the cells with a clear day. VV is the radar signal sent and received in vertical polarization."
+# Read from the tables the manuscript's chunks save, so the supplement renders after the manuscript.
+ra <- as.matrix(read.csv("03.outputs/statewide_regions.csv", row.names = 1)); sc <- as.matrix(read.csv("03.outputs/survey_coverage.csv", row.names = 1))
+op <- as.matrix(read.csv("03.outputs/optical_regions.csv", row.names = 1)); nd <- as.matrix(read.csv("03.outputs/nidrm_comparison.csv", row.names = 1))
+rg <- c(kenai = "Kenai Peninsula", matsu = "Matanuska-Susitna Borough", interior = "Interior", copper = "Copper River basin, set apart")
+tb <- data.frame(Region = unname(rg), Attacked = format(ra["dead", names(rg)], big.mark = "\u2009"), Unattacked = format(ra["living", names(rg)], big.mark = "\u2009"),
+  `Years flown, attacked` = sprintf("%g", sc["years_flown_attacked", names(rg)]), `Years flown, unattacked` = sprintf("%g", sc["years_flown_unattacked", names(rg)]),
+  `AUC, VV` = sprintf("%.2f", ra["AUC_VV", names(rg)]), `AUC, red` = sprintf("%.2f", op["AUC_red", names(rg)]), `AUC, hazard map` = sprintf("%.2f", nd["AUC_loss", names(rg)]),
+  check.names = FALSE)
+ft <- flextable::flextable(tb) |> flextable::fontsize(size = 11, part = "all") |> flextable::align(align = "center", part = "header") |>
+  flextable::align(j = 2:8, align = "right", part = "body") |> flextable::padding(padding.top = 1, padding.bottom = 1, part = "all")
+flextable::set_table_properties(ft, layout = "autofit", width = 1)
+```
+
+# Supplementary methods
+
+```{r}
+#| label: supp-numbers
+#| echo: true
+#| output: false
+# Read from the tables the manuscript's chunks save, so the supplement renders after the manuscript.
+stand_acc <- read.csv("03.outputs/stand_accuracy.csv"); stand_acc <- stand_acc[stand_acc$design == "VV_2014" & stand_acc$set == "training", ]  # the labelled stands of the training areas
+fit_tab <- read.csv("03.outputs/diagnostics_fit.csv"); fit_tab$model <- sub("^Temporal network.*", "Temp network, blind crown folds", fit_tab$model)  # the row label of the resubmitted file of 2026-10-25
+```
+
+The stand test, the temporal network, the logistic fits and the canopy heights were run beside the tests of the first hypothesis. None of them set the threshold or entered the map.
+
+## Stand test
+
+The first hypothesis was first tested on the stands of the crown label areas of @Zwieback_2024. For every month from October 2014 to August 2021, the month of the label image, the median backscatter of each orbit was composited. Each scene was corrected for slope and smoothed by a focal mean of radius 1.5 cells before the median. The composite was sampled at the centre of every 10 m cell of every label area. VV, the signal sent and received in vertical polarization, was read on both orbits. VH, the signal sent vertically and received horizontally, was read on both orbits from June 2017. Before then, it was read on the ascending orbit alone, in scattered months from April 2015. A month without a scene took the linear interpolation of its neighbours. Each 512 m area was divided into 90 m stands. Every stand wholly inside its area took the mean dead crown fraction and the mean backscatter, in linear power, of its 81 cells of 10 m. The stands were classed as in the main text, dead at a dead crown fraction of 0.01 or more. Living stands held no dead crown and a conifer top cover of 5 per cent or more. The training areas held `r stand_acc$dead` dead and `r stand_acc$alive` living stands. The mean backscatter of October 2014 to December 2016 was scored against the classes by the area under the curve. The change in VV from that period to June 2019 to August 2021 was scored the same way and tested with a Welch t-test. The conifer top cover of each stand was scored alone, to test whether the backscatter measured canopy density.
+
+## Temporal network
+
+To test whether the full monthly series added to the mean backscatter, a temporal convolutional network [@Pelletier_2019] was trained on the series of each stand. It ran in the sits package [@Simoes_2021] for up to 60 epochs, stopping after 10 epochs without improvement. One design read VV of both orbits from October 2014, and a second read all four bands from June 2017. The training areas were dealt into five spatial folds of 15 km hexagons by blockCV [@Valavi_2019]. Each fold was predicted by a network trained on the other four. A stand was classed dead at a predicted probability of 0.5 or more. The network was scored by the area under the curve and by the F1 score. The F1 score was the harmonic mean of one minus the commission error and one minus the omission error of the dead class. Its root mean square error was computed on the held-out folds and on each fold network's own training stands. The ratio of the two measured overfitting, rejected above 1.1 as in @Murphy_2026. The mean of each band over the same months, with no training, was scored beside it.
+
+## Logistic fits
+
+Logistic regressions of the dead and living cells of the severity map tested whether a second source added to the ranking of the first. Each source was fitted alone and in combination on the `r format(fit_tab$n[1], big.mark = " ")` labelled cells with every source but the ArcticDEM height. Each fit was scored by the metric set of @Murphy_2026.
+
+1. Nagelkerke's R² [@Nagelkerke_1991], tested against the null fit by the likelihood ratio test.
+2. The Hosmer-Lemeshow statistic over ten groups of fitted probability, which tested calibration [@Hosmer_1980].
+3. The Brier score, the mean squared error of the fitted probability against the label [@Brier_1950].
+4. The root mean square error, the same error relative to the mean of the label, and the mean absolute error.
+5. Moran's I of the residuals over the eight nearest labelled cells [@Moran_1950], which tested their clustering in space.
+6. The Durbin-Watson statistic of the residuals in cell order [@Durbin_1950].
+7. The overfitting ratio, the root mean square error of the held-out folds over that of the training folds, rejected above 1.1 [@Murphy_2026].
+8. The bias share of Theil's U on the held-out predictions [@Theil_1966].
+
+The folds were five, dealt by blockCV [@Valavi_2019] in blocks of `r sprintf("%.0f", fit_tab$block_m[1] / 1000)` km, no smaller than the `r sprintf("%.2f", fit_tab$range_m[1] / 1000)` km range over which the sources were autocorrelated. The temporal network's row of Table S2 was scored on the crown label stands, without R² and the Hosmer-Lemeshow test.
+
+```{r}
+#| label: tbl-fit
+#| echo: true
+#| tbl-cap: "Fit and overfitting diagnostics of the logistic fits of the dead and living cells of the severity map, and of the temporal network on the crown labels. R² is Nagelkerke's, starred by the likelihood ratio test against the null fit, and Hosmer-Lemeshow is the statistic over ten groups, starred by its test. Brier is the mean squared error of the fitted probability against the label, and RMSE is its root. The relative error, rRMSE, is that root over the mean of the label, in per cent, and MAE is the mean absolute error. The RMSE ratio is the error of the held-out folds over that of the training folds, and above 1.1 a fit is overfitted (Murphy et al. 2026). Theil's U bias is the share of the held-out mean squared error due to the difference between the mean prediction and the mean label. Moran's I measures the clustering of the residuals over the eight nearest labelled cells, starred by its test. Durbin-Watson is the statistic of the residuals in cell order. VV is the radar signal sent and received in vertical polarization, and HV and HH the signal sent horizontally and received vertically or horizontally. PALSAR is the Phased Array L-band Synthetic Aperture Radar 2. * p ≤ 0.05, ** p ≤ 0.01, *** p ≤ 0.001, **** p ≤ 0.0001."
+# Read from the table the diagnostics chunk of the manuscript saves; moved whole from the main text on 2026-11-19 under decision 26.
+stars <- function(p) ifelse(is.na(p), "", ifelse(p <= 0.0001, "****", ifelse(p <= 0.001, "***", ifelse(p <= 0.01, "**", ifelse(p <= 0.05, "*", "")))))
+tf <- data.frame(Model = fit_tab$model, n = format(fit_tab$n, big.mark = "\u2009"), `R²` = ifelse(is.na(fit_tab$R2), "", paste0(sprintf("%.3f", fit_tab$R2), stars(fit_tab$p_R2))),
+  `Hosmer-Lemeshow` = ifelse(is.na(fit_tab$HL), "", paste0(sprintf("%.0f", fit_tab$HL), stars(fit_tab$p_HL))), Brier = sprintf("%.3f", fit_tab$Brier), RMSE = sprintf("%.3f", fit_tab$RMSE),
+  `rRMSE (%)` = sprintf("%.1f", fit_tab$rRMSE), MAE = sprintf("%.3f", fit_tab$MAE), `RMSE ratio` = sprintf("%.2f", fit_tab$ratio), `Theil's U bias` = sprintf("%.3f", fit_tab$U_bias),
+  `Moran's I` = paste0(sprintf("%.3f", fit_tab$I), stars(fit_tab$p_I)), `Durbin-Watson` = sprintf("%.2f", fit_tab$DW), check.names = FALSE)
+ft_fit <- flextable::flextable(tf) |> flextable::fontsize(size = 11, part = "all") |> flextable::align(align = "center", part = "header") |>
+  flextable::align(j = 2:12, align = "right", part = "body") |> flextable::padding(padding.top = 1, padding.bottom = 1, part = "all")
+flextable::set_table_properties(ft_fit, layout = "autofit", width = 1)
+```
+
+## Canopy heights
+
+Canopy height was read as a surface model less the 10 m terrain model of the United States Geological Survey 3D Elevation Program. The Copernicus GLO-30 surface model came from X-band radar of 2011 to 2015, and the ArcticDEM mosaic from optical stereo imagery at 2 m [@Porter_2023]. Each was averaged into the 90 m cells of the severity map. Each was scored as the mean backscatter was, by the area under the curve and by Spearman's rank correlation with the dead crown fraction over the forest cells.
+
+## Study steps
+
+@tbl-steps gives the data, dates, operation and output of each step of the study, and Figure 2 of the main text draws them.
+
+```{r}
+#| label: tbl-steps
+#| echo: true
+#| tbl-cap: "Data, dates, operation and output of each step of the study. The reference data of step 2 set the threshold and tested the first hypothesis, and the validation data of step 4 tested the map without setting it. VV is the radar signal sent and received in vertical polarization, and HV and HH the signal sent horizontally and received vertically or horizontally. PALSAR-2 is the Phased Array L-band Synthetic Aperture Radar 2, and NDVI the normalized difference vegetation index. M is the separability index of Kaufman and Remer (1994). LANDFIRE is an interagency wildland fire data programme of the United States, and dB is the decibel."
+# Read from the tables the manuscript's chunks save, so the supplement renders after the manuscript.
+sw <- read.csv("03.outputs/statewide_strip.csv"); fg <- as.matrix(read.csv("03.outputs/fia_ground.csv", row.names = 1))
+sb <- read.csv("02.inputs/derived/strip_cells.csv"); n_blk <- length(unique(paste(floor(sb$x / 1000), floor(sb$y / 1000))))  # the 1 km blocks of the cross-validation
+fmt_n <- function(x) format(x, big.mark = " ")  # its own name, since th holds the plot style of the figures
+steps <- data.frame(
+  Step = c("1. Mean backscatter", "2. Training", "3. Prediction", "4. Validation", "5. Comparison"),
+  Data = c("Sentinel-1 C-band VV backscatter, every interferometric wide swath scene over Alaska",
+    paste0("Reference data, the severity map of Zwieback et al. (2024), ", fmt_n(sw$n_dead), " dead and ", fmt_n(sw$n_alive), " living cells of 90 m"),
+    "Mean backscatter; conifer top cover of 5 per cent or more, or a LANDFIRE spruce type where it held no data west of 141° W",
+    paste0("Validation data, the aerial detection survey in three regions, the Copper River basin set apart, and ", fmt_n(sum(fg["plots", c("kenai", "matsu", "interior")])), " inventory plots with white spruce in the same regions"),
+    "PALSAR-2 L-band HV and HH; change in Sentinel-1 VV; Sentinel-2 red, band 12 and NDVI; Forest Service hazard map"),
+  Dates = c("October 2014 to December 2016", "WorldView-2 image of 2 August 2021", "October 2014 to December 2016; 2015",
+    paste0("2016 to 2024; plots measured ", min(fg["from", c("kenai", "matsu", "interior")]), " to ", max(fg["to", c("kenai", "matsu", "interior")])),
+    "2015 and 2016; October 2014 to December 2016 against June 2019 to August 2021; summer 2016, with 2015 for clear days; 2012"),
+  Operation = c("Border noise masked, slope corrected, normalized to 38° incidence, aggregated to 90 m, averaged in linear power",
+    paste0("Dead ranked against living cells by the area under the receiver operating characteristic curve and separated by M; threshold set by Youden's index; leave-group-out cross-validation over ", fmt_n(10000), " splits of ", n_blk, " blocks of 1 km; ", fmt_n(1000), " draws of ", fmt_n(5000), " cells of each class"),
+    "Forest cells at or above the threshold rated susceptible",
+    "Area under the curve and area-weighted accuracy; paired Wilcoxon signed-rank test of dead against live white spruce",
+    "Scored as the mean backscatter, on the same cells"),
+  Output = c("Mean backscatter of every 90 m forest cell of Alaska",
+    paste0("Test of the first hypothesis; threshold of ", sprintf("%.2f", sw$thr_VV), " dB, with overall accuracy, kappa and commission and omission errors"),
+    "Susceptibility map of Alaska; susceptible forest by region and outside the outbreak", "Test of the second hypothesis", "Benchmarks of the mean backscatter"))
+ft_steps <- flextable::flextable(steps) |> flextable::fontsize(size = 11, part = "all") |> flextable::align(align = "center", part = "header") |>
+  flextable::valign(valign = "top", part = "body") |> flextable::padding(padding.top = 1, padding.bottom = 1, part = "all")
+flextable::set_table_properties(ft_steps, layout = "autofit", width = 1)
+```
+
+# Supplementary results
+
+```{r}
+#| label: supp-results
+#| echo: true
+#| output: false
+# Read from the tables the manuscript's chunks save, so the supplement renders after the manuscript.
+st_chg <- read.csv("03.outputs/stand_change.csv", row.names = 1); st_base <- read.csv("03.outputs/stand_baseline.csv")  # the stand test and the network's untrained baselines
+added_tab <- read.csv("03.outputs/landscape_added.csv"); added_auc <- setNames(added_tab$AUC, added_tab$fit)  # the logistic fits of one source and of all
+struct_tab <- as.matrix(read.csv("03.outputs/landscape_structure.csv", row.names = 1)); land_a <- as.matrix(read.csv("03.outputs/landscape_auc.csv", row.names = 1))
+net_row <- fit_tab[is.na(fit_tab$R2), ]; lf <- fit_tab[!is.na(fit_tab$R2), ]  # the temporal network and the logistic fits of Table S2
+pfmt <- function(p) if (p < 0.001) "p < 0.001" else sprintf("p = %.3f", p)  # the p-value as the text prints it
+fg_s <- as.matrix(read.csv("03.outputs/fia_ground.csv", row.names = 1)); fr_s <- as.matrix(read.csv("03.outputs/fia_remote.csv", row.names = 1))  # the inventory plots of the four regions, the Copper River basin among them
+```
+
+## Strip diagnostics
+
+@tbl-diagnostics gives the separability and classification accuracy of each source on the strip.
+
+```{r}
+#| label: tbl-diagnostics
+#| echo: true
+#| tbl-cap: "Separability and classification accuracy of each source at its own Youden threshold against the dead and living cells of the severity map. M is the separability index of Kaufman and Remer (1994), the difference of the class means over the sum of their standard deviations, starred by the Wilcoxon rank-sum test. AUC is the area under the receiver operating characteristic curve, with the 95 per cent confidence interval (CI) of DeLong et al. (1988). The threshold is in the source's own unit, decibels for radar and reflectance for red, which was darker over dead cells. For the normalized difference vegetation index (NDVI) of the clear days of 23 June to 31 August 2016, it is the index itself. Kappa is Cohen's kappa, and the overall accuracy carries its exact binomial 95 per cent CI. VV is the radar signal sent and received in vertical polarization, and HV and HH the signal sent horizontally and received vertically or horizontally. PALSAR is the Phased Array L-band Synthetic Aperture Radar 2. * p ≤ 0.05, ** p ≤ 0.01, *** p ≤ 0.001, **** p ≤ 0.0001."
+ds <- read.csv("03.outputs/diagnostics_strip.csv")  # the strip sources of the manuscript's chunk diagnostics-strip
+f2 <- function(x) ifelse(is.na(x), "", sprintf("%.2f", x)); stars <- function(p) ifelse(is.na(p), "", ifelse(p <= 0.0001, "****", ifelse(p <= 0.001, "***", ifelse(p <= 0.01, "**", ifelse(p <= 0.05, "*", "")))))
+dt <- data.frame(Source = ds$source, `Dead cells` = format(ds$dead, big.mark = "\u2009"), `Living cells` = format(ds$living, big.mark = "\u2009"), M = ifelse(is.na(ds$M), "", paste0(f2(ds$M), stars(ds$p_M))), `AUC (95% CI)` = sprintf("%.2f (%.2f, %.2f)", ds$AUC, ds$AUC_lo, ds$AUC_hi), Threshold = f2(ds$thr), Kappa = f2(ds$kappa),
+  `Commission, dead` = f2(ds$com_dead), `Commission, living` = f2(ds$com_living), `Omission, dead` = f2(ds$om_dead), `Omission, living` = f2(ds$om_living), `Overall accuracy (95% CI)` = sprintf("%.2f (%.2f, %.2f)", ds$OA, ds$OA_lo, ds$OA_hi), check.names = FALSE)
+ft_diag <- flextable::flextable(dt) |> flextable::fontsize(size = 11, part = "all") |> flextable::align(align = "center", part = "header") |>
+  flextable::align(j = 2:11, align = "right", part = "body") |> flextable::padding(padding.top = 1, padding.bottom = 1, part = "all")
+flextable::set_table_properties(ft_diag, layout = "autofit", width = 1)
+```
+
+## Stand test
+
+At the 90 m stand scale, the mean VV backscatter of October 2014 to December 2016 ranked the `r stand_acc$dead` stands the outbreak later killed above the `r stand_acc$alive` living stands. Its area under the curve was `r sprintf("%.2f", st_chg["VV131", "auc_pre"])` on the descending orbit and `r sprintf("%.2f", st_chg["VV65", "auc_pre"])` on the ascending orbit, the dead stands being `r sprintf("%.1f", st_chg["VV131", "pre_dead"] - st_chg["VV131", "pre_alive"])` dB brighter before the beetle arrived. The change in mean backscatter to June 2019 to August 2021 did not separate the two classes, with an area under the curve of `r sprintf("%.2f", min(st_chg$auc_change))` to `r sprintf("%.2f", max(st_chg$auc_change))`. The dead stands fell by `r sprintf("%.2f", -st_chg["VV131", "change_dead"])` dB and the living by `r sprintf("%.2f", -st_chg["VV131", "change_alive"])` dB \[Welch t-test, t(`r sprintf("%.0f", st_chg["VV131", "df"])`) = `r sprintf("%.2f", st_chg["VV131", "t"])`, `r pfmt(st_chg["VV131", "p"])`\]. Conifer cover alone gave `r sprintf("%.2f", st_chg$auc_conifer[1])`, so the pre-outbreak backscatter did not measure canopy density.
+
+## Temporal network
+
+The temporal network trained on the full monthly series reached an F1 score of `r sprintf("%.2f", stand_acc$F1)` and an area under the curve of `r sprintf("%.2f", stand_acc$AUC)` on the held-out folds. Its root mean square error was `r sprintf("%.2f", net_row$RMSE_train)` on its own training stands against `r sprintf("%.2f", net_row$RMSE_test)` on the held-out folds (@tbl-fit). The ratio of `r sprintf("%.2f", net_row$ratio)` crossed the line of 1.1, so the network was overfitted. The untrained mean of one band over the same months matched it at `r sprintf("%.2f", max(st_base$AUC))`, so the mean backscatter alone was taken into the strip and statewide tests.
+
+## Logistic fits
+
+On the `r format(added_tab$n[1], big.mark = " ")` labelled cells read for each orbit, logistic fits gave an area under the curve of `r sprintf("%.3f", added_auc[["height"]])` for the GLO-30 height alone and `r sprintf("%.3f", added_auc[["c_band"]])` for C-band alone. C-band, L-band and the height together gave `r sprintf("%.3f", added_auc[["all"]])`. On the `r format(fit_tab$n[1], big.mark = " ")` cells of @tbl-fit, the fits reached a Nagelkerke's R² of `r sprintf("%.2f", min(lf$R2))` to `r sprintf("%.2f", max(lf$R2))` and a Brier score of `r sprintf("%.3f", min(lf$Brier))` to `r sprintf("%.3f", max(lf$Brier))`. Their root mean square error was `r sprintf("%.2f", min(lf$RMSE))` to `r sprintf("%.2f", max(lf$RMSE))` against a mean label of `r sprintf("%.2f", lf$RMSE[1] / (lf$rRMSE[1] / 100))`, `r sprintf("%.1f", min(lf$rRMSE))` to `r sprintf("%.1f", max(lf$rRMSE))` per cent of that mean. Their mean absolute error was `r sprintf("%.2f", min(lf$MAE))` to `r sprintf("%.2f", max(lf$MAE))`. None was overfitted, the ratio of held-out to training error being `r sprintf("%.3f", min(lf$ratio))` to `r sprintf("%.3f", max(lf$ratio))` and the Theil's U bias share `r sprintf("%.3f", max(lf$U_bias))` for every fit. The Hosmer-Lemeshow test rejected the calibration of every fit, and the residuals were clustered in space \[Moran's I `r sprintf("%.2f", min(lf$I))` to `r sprintf("%.2f", max(lf$I))`, `r pfmt(max(lf$p_I))`; Durbin-Watson `r sprintf("%.2f", min(lf$DW))` to `r sprintf("%.2f", max(lf$DW))`\].
+
+## Canopy heights
+
+The GLO-30 and ArcticDEM surface minus terrain heights ranked dead above living cells at `r sprintf("%.3f", struct_tab["AUC", "height_glo"])` and `r sprintf("%.3f", struct_tab["AUC", "height_arctic"])`, between the `r sprintf("%.3f", land_a["level", "VV131"])` and `r sprintf("%.3f", land_a["level", "VV65"])` of the two orbits. Over the forest cells, their Spearman's rho with the dead crown fraction was `r sprintf("%.2f", struct_tab["rho_sev", "height_glo"])` and `r sprintf("%.2f", struct_tab["rho_sev", "height_arctic"])`, respectively, against `r sprintf("%.2f", land_a["rho", "VV65"])` and `r sprintf("%.2f", land_a["rho", "VV131"])` for the mean backscatter of the two orbits. With the ascending orbit's mean backscatter, the two heights correlated at `r sprintf("%.2f", struct_tab["rho_VV65", "height_glo"])` and `r sprintf("%.2f", struct_tab["rho_VV65", "height_arctic"])`.
+
+## Copper River plots
+
+The inventory plots of the Copper River basin were set apart with its survey test. On its `r fg_s["both", "copper"]` plots holding both live and dead white spruce, the dead trees were thicker, `r sprintf("%.1f", fg_s["dia_dead", "copper"])` against `r sprintf("%.1f", fg_s["dia_live", "copper"])` cm \[paired Wilcoxon signed-rank test, V = `r format(fg_s["V_dia", "copper"], big.mark = " ")`, `r pfmt(fg_s["p_dia", "copper"])`\], but not significantly taller \[V = `r format(fg_s["V_ht", "copper"], big.mark = " ")`, `r pfmt(fg_s["p_ht", "copper"])`\]. There, the map's mean backscatter rose with the height of each plot's tallest white spruce \[Spearman's rho `r sprintf("%.2f", fr_s["map.rho_ht", "copper"])`, `r pfmt(fr_s["map.p_ht", "copper"])`\].
+
+# References
+
+::: {#refs}
+:::
