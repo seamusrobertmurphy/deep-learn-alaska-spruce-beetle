@@ -32,8 +32,15 @@ def counts(docx):
     h1, h2, prose, sub = "Front", "", {}, {}
     other = dict(abstract=0, captions=0, tables=0, refs=0, figures=0, tables_n=0)
     for child in root.find(w("body")):
-        if child.tag == w("tbl"):
-            other["tables"] += sum(words(text(p)) for p in child.iter(w("p")))
+        if child.tag == w("tbl"):  # Quarto wraps each captioned figure and table in a one-cell table that holds its caption
+            for p in child.iter(w("p")):
+                t = text(p)
+                if "aption" in style(p):
+                    other["captions"] += words(t)
+                    other["figures"] += bool(re.match(r"Fig(?:ure|\.)\s+\d", t))
+                    other["tables_n"] += bool(re.match(r"Table\s+\d", t))
+                else:
+                    other["tables"] += words(t)
             continue
         if child.tag != w("p"):
             continue

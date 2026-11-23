@@ -4,7 +4,7 @@ Run from the repository root,
     python3 05.scripts/audit.py 01.manuscript/manuscript-forestry-new-YYYY-MM-DD.docx [--words LIST]
 
 The manuscript names the set. Its source, the supplement and the cover letter are looked for
-beside it under the same date. The script exits with status 1 if any of nine checks fails.
+beside it under the same date. The script exits with status 1 if any of ten checks fails.
   1. A word or phrase from the list in the repository's hidden, untracked settings folder appears in the set or its source.
   2. A number in the abstract is not printed in the Results.
   3. A count named in the charter's glossary is used another way, such as three hypotheses.
@@ -14,6 +14,7 @@ beside it under the same date. The script exits with status 1 if any of nine che
   7. The set and the source do not share the manuscript's date.
   8. The length is over Forestry's twelve pages of 1,000 words, counted by section-counts.py.
   9. An abbreviation in a table, its header or its caption is not defined in that caption or header.
+ 10. A repository folder, local path, data or code file name, or the word skill sits in the reader-facing text of a Word file.
 The list of check 1 is read from a file and never written here, so this script names none of its words.
 The checks were copied on 2026-11-09 from the audit of canada-emissions-disaggregated and adapted.
 """
@@ -35,10 +36,11 @@ LIMIT = 12_000
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 w = lambda tag: f"{{{W}}}{tag}"
 
-SET = ["supplementary", "cover-letter"]  # beside the manuscript and its source, under the same date
-CANON = {"hypotheses": "two", "steps": "five", "regions": "four", "comparisons": "four", "reference datasets": "three"}  # charter item 7 of the revision brief
+SET = ["supplementary-forestry-new", "cover-letter"]  # beside the manuscript and its source, under the same date; the Forestry supplement renders from supplementary-forestry-new-DATE.qmd, the letter from cover-letter.qmd
+CANON = {"hypotheses": "two", "steps": "five", "regions": ("three", "four"), "survey regions": "three", "test regions": "three",
+         "plot regions": "four", "comparisons": "four", "reference datasets": "three"}  # charter item 7 of the revision brief; three survey and four plot regions since decision J of 2026-11-19, so a bare count of regions may be either
 COUNT_WORDS = "one|two|both|three|four|five|six|seven|eight|nine|ten"
-NAMES = {"ArcticDEM", "GLO", "DeLong"}  # product and person names written with two capitals, not abbreviations
+NAMES = {"ArcticDEM", "GLO", "DeLong", "WorldView"}  # product, sensor and person names written with two capitals, not abbreviations
 UNITS = ["dB"]  # unit abbreviations with one capital, which the capital pattern misses
 NUM = re.compile(r"(?<![\d.,])(?:\d{1,3}(?:[,  ]\d{3})+|\d+)(?:\.\d+)?(?!\d)")
 BORROWED = re.compile(r"\b(?:Tables?|Figs?\.|Figures?|Box(?:es)?)\s+[A-Z]?\d+(?:[.\-–]\d+)+")
@@ -47,6 +49,11 @@ CAPTION = re.compile(r"(Table|Figure|Fig\.)\s+(\d+)\b")
 KEY = re.compile(r"(?<![\w.@])@([A-Za-z0-9_][\w:.#$%&\-+?<>~/]*)")
 ABBR = re.compile(r"(?<![A-Za-z])[A-Za-z]*[A-Z][a-z]*[A-Z][A-Za-z]*(?![a-z])")
 DATED = re.compile(r"-(\d{4}-\d{2}-\d{2})\.docx$")
+READER = re.compile(r"word/(document|footnotes|endnotes|comments|header\d*|footer\d*)\.xml$")  # the parts a reader sees
+WEB = re.compile(r"https?://\S+|www\.\S+")  # public addresses, removed before check 10 reads the text
+PATH = re.compile(r"\b0[1-6]\.[A-Za-z][\w-]*/|/Volumes/|/Users/|~/|(?<![\w.])\.[a-z][\w-]*/|library-science|\b05\.tasks\b"
+                  r"|[\w-]+\.(?:csv|tif|tiff|qmd|R|py|gpkg|json|md|docx|pptx|zip|rds|txt|lua)\b")  # Earth Engine asset ids carry no extension and stay allowed
+SKILL = re.compile(r"(?<![A-Za-z])skill", re.I)  # priority N3 of 2026-11-15
 
 
 def style(p):
@@ -156,16 +163,17 @@ def check_abstract(sec):
 
 def check_glossary(texts):
     bad = []
-    terms = "|".join(re.escape(k) for k in CANON)
+    allowed = {k: v if isinstance(v, tuple) else (v,) for k, v in CANON.items()}
+    terms = "|".join(re.escape(k) for k in sorted(CANON, key=len, reverse=True))
     for name, text in texts:
         for m in re.finditer(rf"(?i)\b({COUNT_WORDS})\s+({terms})\b", text):
             used, term = m.group(1).lower(), m.group(2).lower()
-            if used == "both" and CANON[term] == "two":
+            if used == "both" and "two" in allowed[term]:
                 continue
-            if used != CANON[term]:
+            if used not in allowed[term]:
                 s = max(text.rfind(".", 0, m.start()), text.rfind("\n", 0, m.start())) + 1
                 bad.append(f"{name}: {m.group(0)!r} in {text[s:m.end() + 40].strip()!r}")
-    return bad, ", ".join(f"{v} {k}" for k, v in CANON.items())
+    return bad, ", ".join(f"{' or '.join(v)} {k}" for k, v in allowed.items())
 
 
 def check_citations(ms_src, paras):
@@ -178,6 +186,16 @@ def check_citations(ms_src, paras):
     if listed != len(cited):
         bad.append(f"the reference list holds {listed} works and the source cites {len(cited)}")
     return bad, f"{len(cited)} works cited, {listed} listed"
+
+
+def captions(paras):
+    """The numbers of the table and figure captions, read from caption paragraphs wherever they sit, inside Quarto's wrapper tables too."""
+    out = {"Table": [], "Figure": []}
+    for st, t in paras:
+        c = CAPTION.match(t)
+        if c and "aption" in st:
+            out["Table" if c.group(1).startswith("Table") else "Figure"].append(int(c.group(2)))
+    return out
 
 
 def check_items(paras):
@@ -230,34 +248,68 @@ def check_count(ms):
     prose, _, o = sc.counts(ms)
     n = (o["abstract"] + sum(v for k, v in prose.items() if k != "References") + o["captions"] + o["tables"]
          + o["refs"] + sc.FIGURE_WORDS * o["figures"])
-    return ([f"length {n:,} is over {LIMIT:,}"] if n > LIMIT else []), f"length {n:,} of {LIMIT:,}"
+    bad = [f"length {n:,} is over {LIMIT:,}"] if n > LIMIT else []
+    figs = len(captions(paragraphs(ms))["Figure"])
+    if o["figures"] != figs:  # on 2026-11-18 the count added no figure, because each sat in a wrapper table
+        bad.append(f"{o['figures']} figures counted against {figs} figure captions")
+    return bad, f"length {n:,} of {LIMIT:,}, with {o['figures']} figures at {sc.FIGURE_WORDS} words"
 
 
 def defined(abbr, legend):
-    a = re.escape(abbr)
-    return re.search(rf"\({a}\)|(?<![A-Za-z]){a},\s+(?:the\s+)?[a-z]|(?<![A-Za-z]){a}\s+(?:is|are|means|denotes|stands for)\s|(?<![A-Za-z]){a}\s*=", legend) is not None
+    """True if the legend defines the abbreviation, as "(NDVI)", "NDVI, the", "NDVI is", "NDVI the", "PALSAR-2 is" or "HV and HH the"."""
+    a = re.escape(abbr) + r"(?:-\d+)?"  # a numbered name, such as PALSAR-2, defines its stem
+    return re.search(rf"\({a}\)|(?<![A-Za-z]){a},\s+(?:the\s+)?[a-z]|(?<![A-Za-z]){a}(?:\s+and\s+[A-Za-z][\w-]*)?\s+(?:is|are|the|means|denotes|stands for)\s|(?<![A-Za-z]){a}\s*=", legend) is not None
 
 
-def check_abbreviations(ms):
-    """Each data table is the table after a caption that opens Table N; equation tables carry no caption."""
-    bad, n_tables = [], 0
-    kids = list(body(ms))
-    for i, el in enumerate(kids):
-        if el.tag != w("tbl"):
-            continue
-        cap = next((ptext(k) for k in reversed(kids[max(0, i - 3):i]) if k.tag == w("p") and ptext(k).strip()), "")
-        c = re.match(r"Table\s+(\d+)", cap)
-        if not c:
-            continue
-        n_tables += 1
-        rows = el.findall(w("tr"))
-        header = " ".join(ptext(p) for p in rows[0].iter(w("p"))) if rows else ""
-        cells = " ".join(ptext(p) for p in el.iter(w("p")))
-        found = set(ABBR.findall(cells + " " + cap)) - NAMES
-        found |= {u for u in UNITS if re.search(rf"(?<![A-Za-z]){u}(?![A-Za-z])", cells + " " + cap)}
-        missing = sorted(a for a in found if not defined(a, cap + " " + header))
-        bad += [f"Table {c.group(1)}: {a} is not defined in its caption" for a in missing]
-    return bad, f"{n_tables} tables"
+TABLE_CAP = re.compile(r"Table\s+(S\s?\d+|\d+)\b")  # Table 1 of the manuscript and Table S1 of the supplement, before or after supplement-labels.py closes "Table S 1"
+
+
+def check_abbreviations(files):
+    """Each data table follows its Table N or Table SN caption in the same cell of a wrapper table, as Quarto writes it,
+    with two tables of adjacent chunks sharing one wrapper of two rows, or follows the caption in the body once a layout
+    script has unwrapped it. Figure and equation tables carry no Table caption. The supplement is read since 2026-11-19."""
+    bad, n_read, n_caps = [], 0, 0
+    for f in files:
+        read, pairs = [], []
+        kids = list(body(f))
+        for i, el in enumerate(kids):
+            if el.tag != w("tbl"):
+                continue
+            inside = [p for p in el.iter(w("p")) if "aption" in style(p) and TABLE_CAP.match(ptext(p))]
+            if inside:
+                pairs += [(ptext(p), next((s for s in p.itersiblings() if s.tag == w("tbl")), None)) for p in inside]
+            else:
+                pairs.append((next((ptext(k) for k in reversed(kids[max(0, i - 3):i]) if k.tag == w("p") and ptext(k).strip()), ""), el))
+        for cap, data in pairs:
+            c = TABLE_CAP.match(cap)
+            if not c or data is None:
+                continue
+            num = re.sub(r"\s", "", c.group(1))
+            read.append(num)
+            rows = data.findall(w("tr"))
+            header = " ".join(ptext(p) for p in rows[0].iter(w("p"))) if rows else ""
+            cells = " ".join(ptext(p) for p in data.iter(w("p")))
+            found = set(ABBR.findall(cells + " " + cap)) - NAMES
+            found |= {u for u in UNITS if re.search(rf"(?<![A-Za-z]){u}(?![A-Za-z])", cells + " " + cap)}
+            missing = sorted(a for a in found if not defined(a, cap + " " + header))
+            bad += [f"Table {num}: {a} is not defined in its caption" for a in missing]
+        caps = [re.sub(r"\s", "", TABLE_CAP.match(t).group(1)) for st, t in paragraphs(f) if "aption" in st and TABLE_CAP.match(t)]
+        bad += [f"Table {n} has a caption but its table was not read" for n in caps if n not in read]  # on 2026-11-18 the check read no table and passed
+        n_read, n_caps = n_read + len(read), n_caps + len(caps)
+    return bad, f"{n_read} tables read of {n_caps} table captions in {len(files)} Word files"
+
+
+def check_paths(files):
+    """Readers see no repository path, local path or file name, the rule Seamus set on 2026-11-15 as priority N2."""
+    bad = []
+    for f in files:
+        z = zipfile.ZipFile(f)
+        for name in (n for n in z.namelist() if READER.match(n)):
+            x = z.read(name).decode("utf8", "ignore").replace("</w:p>", "\n")
+            text = WEB.sub(" ", html.unescape(re.sub(r"<[^>]+>", "", x)))
+            for m in list(PATH.finditer(text)) + list(SKILL.finditer(text)):
+                bad.append(f"{f.name}: {m.group(0)!r} in {text[max(0, m.start() - 50):m.end() + 20].strip()!r}")
+    return bad, f"{len(files)} Word files"
 
 
 def main():
@@ -282,7 +334,8 @@ def main():
         ("6 borrowed numbers in brackets", lambda: check_borrowed(paras)),
         ("7 one date", lambda: check_dates(ms)),
         ("8 length", lambda: check_count(ms)),
-        ("9 table abbreviations defined", lambda: check_abbreviations(ms)),
+        ("9 table abbreviations defined", lambda: check_abbreviations([f for f in present if f.suffix == ".docx"])),
+        ("10 no repository paths", lambda: check_paths([f for f in present if f.suffix == ".docx"])),
     ]
     failed = 0
     for name, run in checks:
