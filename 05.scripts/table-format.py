@@ -1,7 +1,7 @@
 """Gives every data table in a rendered Word manuscript one uniform look.
 
 Run on the rendered file after forestry-layout.py and before landscape-tables.py:
-  python3 ../05.scripts/table-format.py manuscript-forestry-new-2026-11-23.docx
+  python3 ../05.scripts/table-format.py manuscript-2026-11-24.docx
 
 Quarto builds the flextable tables (2 to 5 and the supplement's S1 to S4) and the one kable pipe
 table (Table 1, left a pipe table so pandoc resolves the citations in its cells) with different

@@ -21,7 +21,7 @@ from lxml import etree
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-SET = ["supplementary-forestry-new", "cover-letter"]
+SET = ["supplementary", "cover-letter"]
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 w = lambda tag: f"{{{W}}}{tag}"
 
