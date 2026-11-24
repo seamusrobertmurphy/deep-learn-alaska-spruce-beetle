@@ -1,4 +1,8 @@
-"""Turns the page of every captioned table in a rendered Word manuscript to landscape, leaving the other pages portrait.
+"""Turns the page of every wide captioned table in a rendered Word manuscript to landscape, leaving the other pages portrait.
+
+A table is wide, and turned, when its grid has six or more columns; the narrow tables stay upright
+(Seamus, 2026-11-24). Run after table-format.py, which already sets the table font and size, so this
+script no longer touches either.
 
 Run on the rendered file after the render:
   python3 ../05.scripts/landscape-tables.py manuscript-jars-2026-11-06.docx
@@ -39,19 +43,6 @@ def break_para(sect):
     return p
 
 
-def text_size(group, half_points):
-    # Set the text size of every run in the block's tables, the template's 10 pt, or 9 pt for a table of ten or more columns (Seamus's file of 2026-10-25).
-    for tbl in (t for el in group for t in ([el] if el.tag == q("tbl") else el.iter(q("tbl")))):
-        for r in tbl.iter(q("r")):
-            rpr = r.find(q("rPr"))
-            if rpr is None:
-                rpr = etree.Element(q("rPr")); r.insert(0, rpr)
-            for tag in ("sz", "szCs"):
-                e = rpr.find(q(tag))
-                if e is None: e = etree.SubElement(rpr, q(tag))
-                e.set(q("val"), str(half_points))
-
-
 def widen(group, width):
     # Scale each table grid in the block to the landscape text width, keeping the columns' proportions.
     for grid in (g for el in group for g in el.iter(q("tblGrid"))):
@@ -79,6 +70,12 @@ def main(path):
             groups.append(kids[i:j + 1])
     if not groups:
         sys.exit(f"{path}: no captioned table found, file left unchanged")
+    def group_ncol(g):  # flextable writes no grid, so the columns are counted from the widest row
+        return max((len(tr.findall(q("tc"))) for el in g for tr in el.iter(q("tr"))), default=0)
+    groups = [g for g in groups if group_ncol(g) >= 6]  # only the wide tables turn; the narrow ones stay upright
+    if not groups:
+        print(f"{path}: no wide table (six or more columns), every table left upright")
+        return
     first, ends = True, set()
     for g in groups:
         prev = g[0].getprevious()
@@ -89,8 +86,6 @@ def main(path):
         first = False
         end = break_para(landscape(final, text_w)); g[-1].addnext(end); ends.add(end)
         widen(g, text_w)
-        ncol = max((len(tr.findall(q("tc"))) for el in g for tr in el.iter(q("tr"))), default=0)  # flextable writes no grid, so the columns are counted from the widest row
-        text_size(g, 18 if ncol >= 10 else 20)
     not_first(final)
     xml = etree.tostring(root, xml_declaration=True, encoding="UTF-8", standalone=True)
     fd, tmp = tempfile.mkstemp(suffix=".docx", dir=os.path.dirname(os.path.abspath(path))); os.close(fd)
