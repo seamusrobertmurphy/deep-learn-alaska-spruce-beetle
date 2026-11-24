@@ -24,7 +24,7 @@ crossref:
 #| label: supp-setup
 #| echo: true
 #| output: false
-# The Forestry supplement of manuscript-forestry-new-2026-11-22.qmd; supplementary.qmd stays the supplement of the Journal of Applied Remote Sensing version.
+# The supplement of the current manuscript draft; supplementary.qmd stays the supplement of the Journal of Applied Remote Sensing version.
 library(ggplot2)
 knitr::opts_knit$set(root.dir = here::here())  # paths from the repository root, as in the manuscript
 ```

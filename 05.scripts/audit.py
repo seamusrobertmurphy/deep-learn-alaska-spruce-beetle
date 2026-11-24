@@ -1,7 +1,7 @@
 """Audit of a rendered Forestry submission set, run after every render of the manuscript.
 
 Run from the repository root,
-    python3 05.scripts/audit.py 01.manuscript/manuscript-forestry-new-YYYY-MM-DD.docx [--words LIST]
+    python3 05.scripts/audit.py 01.manuscript/manuscript-YYYY-MM-DD.docx [--words LIST]
 
 The manuscript names the set. Its source, the supplement and the cover letter are looked for
 beside it under the same date. The script exits with status 1 if any of ten checks fails.
@@ -36,7 +36,7 @@ LIMIT = 12_000
 W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 w = lambda tag: f"{{{W}}}{tag}"
 
-SET = ["supplementary-forestry-new", "cover-letter"]  # beside the manuscript and its source, under the same date; the Forestry supplement renders from supplementary-forestry-new-DATE.qmd, the letter from cover-letter.qmd
+SET = ["supplementary", "cover-letter"]  # beside the manuscript and its source, under the same date; the supplement renders from supplementary-DATE.qmd, the letter from cover-letter-DATE.qmd
 CANON = {"hypotheses": "two", "steps": "five", "regions": ("three", "four"), "survey regions": "three", "test regions": "three",
          "plot regions": "four", "comparisons": "four", "reference datasets": "three"}  # charter item 7 of the revision brief; three survey and four plot regions since decision J of 2026-11-19, so a bare count of regions may be either
 COUNT_WORDS = "one|two|both|three|four|five|six|seven|eight|nine|ten"
