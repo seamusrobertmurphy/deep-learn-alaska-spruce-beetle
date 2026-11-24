@@ -4,7 +4,7 @@
 # Chunk flags such as eval: false are ignored, so a named chunk always runs.
 # POST, if set, is R code evaluated after the last chunk, for printing a result.
 setwd(normalizePath(file.path(dirname(sub("^--file=", "", grep("^--file=", commandArgs(), value = TRUE))), "..")))
-src <- readLines(Sys.getenv("QMD", "01.manuscript/manuscript-jars.qmd"))  # QMD=01.manuscript/manuscript-forestry.qmd runs the Forestry copy
+src <- readLines(Sys.getenv("QMD", "01.manuscript/manuscript-2026-11-06.qmd"))  # QMD=01.manuscript/manuscript-2026-10-25.qmd runs the Forestry copy
 op <- grep("^```\\{r", src); cl <- grep("^```\\s*$", src)
 chunks <- lapply(op, function(o) { e <- cl[cl > o][1]; body <- src[(o + 1):(e - 1)]
   lab <- sub("^#\\|\\s*label:\\s*", "", grep("^#\\|\\s*label:", body, value = TRUE))
