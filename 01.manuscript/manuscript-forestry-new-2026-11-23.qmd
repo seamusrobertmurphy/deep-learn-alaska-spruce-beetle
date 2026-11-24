@@ -78,12 +78,14 @@ file.remove(sidecars)
 # Assign working directory to repo root: '../manuscript.qmd'
 knitr::opts_knit$set(root.dir = here::here())
 
-# Point environment to your configured python
-Sys.setenv(RETICULATE_PYTHON = "/opt/local/bin/python3.12")  # Earth Engine loads only under Python 3.12 on this machine, since the Python 3.14 that ~/.Renviron names lacks the cffi backend of its cryptography package (2026-11-18); set before reticulate starts Python
+# Point environment to a Python that exists; the Mac used /opt/local/bin/python3.12, Ubuntu uses the system python3. Earth Engine needs Python 3.12, so a 3.12 is preferred.
+py_pref <- c("/opt/local/bin/python3.12", Sys.which("python3.12"), Sys.which("python3"))
+py <- py_pref[py_pref != "" & file.exists(py_pref)][1]
+if (!is.na(py)) Sys.setenv(RETICULATE_PYTHON = py)  # set before reticulate starts Python
 
 # Initialise Earth Engine; the project manuscripts-personal replaced vvb-checks on 2026-11-18, which had replaced murphys-deforisk on 2026-10-14, each time when the project before was in the restricted mode of the noncommercial tier
-ee_module <- reticulate::import("ee"); ee_project <- "manuscripts-personal"; asset_root <- "projects/manuscripts-personal/assets"  # the project billed for computation, and the folder that holds the public map and every other asset
-suppressWarnings(rm(list = "ee")); ee_signed_in <- FALSE; makeActiveBinding("ee", function() { if (!ee_signed_in) { ee_module$Initialize(project = ee_project); ee_signed_in <<- TRUE }; ee_module }, environment())  # Earth Engine is signed in to on first use, so a render whose saved outputs all exist never contacts it
+ee_module <- tryCatch(reticulate::import("ee"), error = function(e) NULL); ee_project <- "manuscripts-personal"; asset_root <- "projects/manuscripts-personal/assets"  # a render whose saved outputs all exist never contacts Earth Engine, so a machine without the ee module still renders from the saved outputs
+suppressWarnings(rm(list = "ee")); ee_signed_in <- FALSE; makeActiveBinding("ee", function() { if (is.null(ee_module)) stop("the Earth Engine python module 'ee' is not installed on this machine"); if (!ee_signed_in) { ee_module$Initialize(project = ee_project); ee_signed_in <<- TRUE }; ee_module }, environment())  # Earth Engine is signed in to on first use, so a render whose saved outputs all exist never contacts it
 
 # Helper to visualize EE tile in tmap/leaflet
 ee_tile_url <- function(ee_image, vis_params) {
@@ -429,6 +431,26 @@ ggplot() +
 Alt text: Four columns, a strip and a band. Mean radar backscatter of 2014 to 2016 is scored against a 2021 severity map, which trains the threshold. The threshold predicts susceptible forest across Alaska, which a 2016 to 2024 survey and inventory plots then test. The strip on the right gives the application from 2027, and the band beneath holds four comparison sources.
 
 ## Data
+
+The study drew on two radar sensors, one optical sensor, three elevation models, the image behind the reference labels, and an aerial survey (@tbl-sensors).
+
+```{r}
+#| label: tbl-sensors
+#| echo: true
+#| tbl-cap: "Satellite and survey data used in the study, and how each entered the analysis. Every raster source was averaged into the 90 m cells of the map. VV and VH are the radar signal sent and received in vertical polarization, and sent vertically and received horizontally; HV and HH are sent horizontally and received vertically or horizontally. γ⁰ is terrain-corrected radar backscatter. MSI is the Multispectral Instrument of Sentinel-2. PALSAR is the Phased Array L-band Synthetic Aperture Radar on the Advanced Land Observing Satellite 2 (ALOS-2). 3DEP is the United States 3D Elevation Program, GLO-30 the Copernicus 30 m digital elevation model, and ArcticDEM the Polar Geospatial Center surface model. Sentinel-1 built the susceptibility map, and the other satellites and the survey tested it."
+sensors <- data.frame(
+  Dataset = c("Sentinel-1", "ALOS-2 PALSAR-2", "Sentinel-2 MSI", "Elevation models (GLO-30, 3DEP, ArcticDEM)", "WorldView-2 (severity map)", "Aerial detection survey"),
+  `Signal or band` = c("C-band radar, VV (VH for the stand series)", "L-band radar, HV and HH", "optical, shortwave infrared band 12 and others", "surface and ground height, canopy height their difference", "optical, dead-crown share", "damage mapped by eye"),
+  `Orbit / path` = c("ascending 65, descending 131", "annual mosaic", "fixed swath", "mosaic", "fixed swath", "from an aircraft"),
+  Period = c("Oct 2014 to Dec 2016", "2015 to 2016", "Jun to Aug 2016", "2024 build", "2 Aug 2021", "2016 to 2024"),
+  Resolution = c("10 m, read at 90 m", "25 m, read at 90 m", "10 to 20 m, read at 90 m", "2 to 30 m, read at 90 m", "about 0.5 m, read at 90 m", "mapped polygons"),
+  Images = c(paste0(strip_a$scenes, " per cell, median"), "two yearly mosaics", "clear-day mean", "mosaics", "one image", "yearly"),
+  Processing = c("slope-corrected γ⁰, border-noise mask, scene mean", "γ⁰ mosaic", "cloud-masked, clear-day mean", "surface minus ground", "crown delineation (Zwieback 2024)", "field survey"),
+  Cloud = c("sees through cloud", "sees through cloud", "clear days only", "not affected", "clear scene", "not affected"),
+  Role = c("the susceptibility map", "radar comparison", "optical comparison", "height comparison, and the radar slope correction", paste0("reference labels, ", format(strip_a$n_dead, big.mark = " "), " dead and ", format(strip_a$n_alive, big.mark = " "), " living cells"), "validation"),
+  check.names = FALSE)
+fmt_tbl(sensors)
+```
 
 
 ```{r}
