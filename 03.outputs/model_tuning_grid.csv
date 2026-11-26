@@ -1,0 +1,35 @@
+"model","parameter","cv_rmse"
+"Random forest","mtry 1, node 1",0.280528661202308
+"Random forest","mtry 2, node 1",0.283434272603206
+"Random forest","mtry 1, node 10",0.275324462665569
+"Random forest","mtry 2, node 10",0.278229881868057
+"Random forest","mtry 1, node 100",0.266945125081082
+"Random forest","mtry 2, node 100",0.267853124987709
+"Random forest","mtry 1, node 1000",0.265155934299563
+"Random forest","mtry 2, node 1000",0.264957102403562
+"Random forest","mtry 1, node 5000",0.268317537936803
+"Random forest","mtry 2, node 5000",0.266671075246403
+"Support vector machine","cost 0.01, gamma 0.01",0.275634299857852
+"Support vector machine","cost 0.1, gamma 0.01",0.273128175640562
+"Support vector machine","cost 1, gamma 0.01",0.272068161764747
+"Support vector machine","cost 10, gamma 0.01",0.27330867607941
+"Support vector machine","cost 0.01, gamma 0.1",0.274161690213011
+"Support vector machine","cost 0.1, gamma 0.1",0.273130667403868
+"Support vector machine","cost 1, gamma 0.1",0.274943660392977
+"Support vector machine","cost 10, gamma 0.1",0.276130337496959
+"Support vector machine","cost 0.01, gamma 1",0.278451737616324
+"Support vector machine","cost 0.1, gamma 1",0.276245835627719
+"Support vector machine","cost 1, gamma 1",0.276131272921834
+"Support vector machine","cost 10, gamma 1",0.277651095785007
+"Gradient boosting","depth 1, eta 0.05, rounds 50",0.269635159777694
+"Gradient boosting","depth 2, eta 0.05, rounds 50",0.267188146606794
+"Gradient boosting","depth 4, eta 0.05, rounds 50",0.2654178603606
+"Gradient boosting","depth 1, eta 0.3, rounds 50",0.26682232061904
+"Gradient boosting","depth 2, eta 0.3, rounds 50",0.264766042053417
+"Gradient boosting","depth 4, eta 0.3, rounds 50",0.265125831140761
+"Gradient boosting","depth 1, eta 0.05, rounds 200",0.266160778641397
+"Gradient boosting","depth 2, eta 0.05, rounds 200",0.264877996826087
+"Gradient boosting","depth 4, eta 0.05, rounds 200",0.264601625440896
+"Gradient boosting","depth 1, eta 0.3, rounds 200",0.266099412968886
+"Gradient boosting","depth 2, eta 0.3, rounds 200",0.264909041672231
+"Gradient boosting","depth 4, eta 0.3, rounds 200",0.267436080111008

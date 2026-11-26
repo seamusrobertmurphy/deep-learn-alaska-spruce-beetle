@@ -1,0 +1,5 @@
+"classification","dead_susceptible","living_susceptible","dead_not","living_not"
+"Threshold map",30219,1488,3956,5259
+"Random forest",32924,2865,1251,3882
+"Support vector machine",33195,3391,980,3356
+"Gradient boosting",32972,2889,1203,3858
