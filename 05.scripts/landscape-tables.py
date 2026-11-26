@@ -85,9 +85,7 @@ def main(path):
     first, ends = True, set()
     for g in groups:
         prev = g[0].getprevious()
-        if prev in ends:  # two tables in a row share one landscape section
-            body.remove(prev)
-        else:
+        if prev not in ends:  # after a landscape table, its own section end already starts a new landscape page, so each table has its own page (Seamus, 2026-11-26)
             g[0].addprevious(break_para(copy.deepcopy(final) if first else not_first(copy.deepcopy(final))))
         first = False
         end = break_para(landscape(final, text_w)); g[-1].addnext(end); ends.add(end)
