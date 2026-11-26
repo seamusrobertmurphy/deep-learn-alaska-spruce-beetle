@@ -1,7 +1,8 @@
 """Turns the page of every wide captioned table in a rendered Word manuscript to landscape, leaving the other pages portrait.
 
-A table is wide, and turned, when its grid has six or more columns; the narrow tables stay upright
-(Seamus, 2026-11-24). Run after table-format.py, which already sets the table font and size, so this
+A table is turned when its grid has six or more columns (Seamus, 2026-11-24), or when its cells hold
+long text, 150 characters or more a row on average, as Table 1 does on four columns (Seamus, 2026-11-25).
+The short narrow tables stay upright. Run after table-format.py, which already sets the table font and size, so this
 script no longer touches either.
 
 Run on the rendered file after the render:
@@ -72,9 +73,14 @@ def main(path):
         sys.exit(f"{path}: no captioned table found, file left unchanged")
     def group_ncol(g):  # flextable writes no grid, so the columns are counted from the widest row
         return max((len(tr.findall(q("tc"))) for el in g for tr in el.iter(q("tr"))), default=0)
-    groups = [g for g in groups if group_ncol(g) >= 6]  # only the wide tables turn; the narrow ones stay upright
+    def group_row_chars(g):  # mean characters of cell text a row, over the data grid inside the caption wrapper
+        inner = [t for el in g for t in el.iter(q("tbl")) if t not in g] or [el for el in g if el.tag == q("tbl")]
+        rows = sum(len(t.findall(q("tr"))) for t in inner)
+        chars = sum(len("".join(x.text or "" for x in tc.iter(q("t")))) for t in inner for tc in t.iter(q("tc")))
+        return chars / rows if rows else 0
+    groups = [g for g in groups if group_ncol(g) >= 6 or group_row_chars(g) >= 150]  # wide tables and long-text tables turn; short narrow ones stay upright
     if not groups:
-        print(f"{path}: no wide table (six or more columns), every table left upright")
+        print(f"{path}: no wide or long-text table, every table left upright")
         return
     first, ends = True, set()
     for g in groups:
