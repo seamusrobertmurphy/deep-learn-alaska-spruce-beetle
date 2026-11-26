@@ -29,8 +29,8 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 | Measure | Indicator | Assumption | Basis |
 |---|---|---|---|
 | Canopy height before the outbreak, from two surface models | Large dominant spruce | Taller | The beetle takes large, slowly growing dominants and codominants first (Massey and Wygant 1954, Werner and Holsten 1983, Hard and Holsten 1985, Doak 2004), and an outbreak left stands with smaller average and maximum heights (Veblen et al. 1991) |
-| Sentinel-1 C-band VV mean backscatter before the outbreak | Stand structure and biomass | Higher | Backscatter rises with forest biomass until it saturates, C-band being much less sensitive than L-band (Dobson et al. 1992, Santoro and Cartus 2018) |
-| ALOS PALSAR L-band HV mean backscatter | Stand structure and biomass | Higher | Backscatter rises with biomass to a saturation near 100 tons per hectare at L-band (Dobson et al. 1992) |
+| Sentinel-1 C-band VV mean backscatter before the outbreak | Stand structure | Higher | C-band backscatter responds to the upper canopy and saturates at low biomass, being much less sensitive to biomass than L-band (Dobson et al. 1992, Santoro and Cartus 2018) |
+| ALOS PALSAR L-band HV mean backscatter | Stand structure and biomass | Higher | L-band backscatter saturates near 100 tons of biomass per hectare (Dobson et al. 1992) |
 | Change in VV through the outbreak | Mortality | A difference of either sign, if the radar recorded the mortality | Radar was proposed for bark beetle damage, although detection before the crowns fade has had limited success (Hollaus and Vreugdenhil 2019, Hechtl et al. 2025) |
 | Diameter and height of dead and live white spruce on inventory plots | Tree size | Dead trees larger and taller where the outbreak has run | Killed trees were larger and grew more slowly than survivors in the same stands (Werner and Holsten 1983, Hard 1985, Doak 2004) |
 

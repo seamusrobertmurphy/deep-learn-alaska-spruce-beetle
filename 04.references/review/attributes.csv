@@ -1,6 +1,6 @@
 "measure","stands_for","expected","basis"
 "Canopy height before the outbreak, from two surface models","Large dominant spruce","Taller","The beetle takes large, slowly growing dominants and codominants first [@Massey_1954; @Werner_1983; @Hard_1985b; @Doak_2004], and an outbreak left stands with smaller average and maximum heights [@Veblen_1991]"
-"Sentinel-1 C-band VV mean backscatter before the outbreak","Stand structure and biomass","Higher","Backscatter rises with forest biomass until it saturates, C-band being much less sensitive than L-band [@Dobson_1992; @Santoro_2018]"
-"ALOS PALSAR L-band HV mean backscatter","Stand structure and biomass","Higher","Backscatter rises with biomass to a saturation near 100 tons per hectare at L-band [@Dobson_1992]"
+"Sentinel-1 C-band VV mean backscatter before the outbreak","Stand structure","Higher","C-band backscatter responds to the upper canopy and saturates at low biomass, being much less sensitive to biomass than L-band [@Dobson_1992; @Santoro_2018]"
+"ALOS PALSAR L-band HV mean backscatter","Stand structure and biomass","Higher","L-band backscatter saturates near 100 tons of biomass per hectare [@Dobson_1992]"
 "Change in VV through the outbreak","Mortality","A difference of either sign, if the radar recorded the mortality","Radar was proposed for bark beetle damage, although detection before the crowns fade has had limited success [@Hollaus_2019; @Hechtl_2025]"
 "Diameter and height of dead and live white spruce on inventory plots","Tree size","Dead trees larger and taller where the outbreak has run","Killed trees were larger and grew more slowly than survivors in the same stands [@Werner_1983; @Hard_1985; @Doak_2004]"
