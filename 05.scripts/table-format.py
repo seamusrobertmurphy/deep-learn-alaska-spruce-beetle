@@ -13,6 +13,7 @@ rewrites all of them the same way, so the submission's tables match (Seamus, 202
   header    bold, centred
   body      a text column left, a column of values only centred
   cells     centred top to bottom, with a taller uniform top and bottom margin so the rows are even
+  lines     single line spacing in every cell, so the centring top to bottom shows in the pipe table too
   columns   autofit, so a column with more content is given more width
   borders   one line above the header, one under it and one below the last row, nothing else
 
@@ -186,6 +187,9 @@ def format_cell(tc, is_header, jc_val):
         set_run(r, size=SIZE, bold=(True if is_header else None))
     for p in tc.findall(q("p")):
         set_jc(p, jc_val)
+        sp = ensure(p.find(q("pPr")), "spacing", PPR_ORDER)  # single line spacing with the same small space above and below, so the text sits at the middle of its cell; the pipe table's cells came double spaced from the body style, which set the text low (Seamus, 2026-11-25)
+        for k in list(sp.attrib): del sp.attrib[k]
+        sp.set(q("line"), "240"); sp.set(q("lineRule"), "auto"); sp.set(q("before"), "20"); sp.set(q("after"), "20")
     tcpr = tc.find(q("tcPr"))
     if tcpr is None:
         tcpr = etree.Element(q("tcPr"))
