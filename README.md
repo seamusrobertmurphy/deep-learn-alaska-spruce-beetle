@@ -115,13 +115,13 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 | Interior | 70 639 | 10 105 | 14 | 69 |
 | Alaska | 446 963 | 81 945 | 18 | 55 |
 
-**Table 9.** The statewide map against the aerial detection survey in three regions. Attacked cells lay inside a spruce beetle polygon on white spruce of 2016 to 2024; unattacked cells were forest the surveyors flew over, never inside a spruce beetle polygon of any year, within 10 km of one. AUC is the area under the curve for ranking attacked above unattacked; the two shares are the cells of each class the strip’s VV threshold called susceptible. VV is the radar signal sent and received in vertical polarization.
+**Table 9.** The statewide map against the aerial detection survey in three regions. Attacked cells lay inside a spruce beetle polygon on white spruce of 2016 to 2024. Unattacked cells were forest the surveyors flew over within 10 km of one, never inside a spruce beetle polygon of any year. Rated susceptible is the share of cells at or above the map’s threshold. AUC is the area under the curve. VV is the radar signal sent and received in vertical polarization.
 
-| Region | Attacked | Unattacked | AUC, VV | VV attacked (dB) | VV unattacked (dB) | Susceptible attacked (%) | Susceptible unattacked (%) |
+| Region | Rated susceptible (%)<br>Attacked | Rated susceptible (%)<br>Unattacked | AUC | Mean VV backscatter (dB)<br>Attacked | Mean VV backscatter (dB)<br>Unattacked | Cells sampled<br>Attacked | Cells sampled<br>Unattacked |
 |---|---|---|---|---|---|---|---|
-| Kenai Peninsula | 4 998 | 4 900 | 0.71 | -7.9 | -8.4 | 79 | 47 |
-| Matanuska-Susitna | 5 000 | 4 995 | 0.72 | -7.8 | -8.7 | 75 | 40 |
-| Interior | 5 000 | 4 147 | 0.60 | -8.7 | -9.0 | 30 | 19 |
+| Kenai Peninsula | 79 | 47 | 0.71 | -7.9 | -8.4 | 4 998 | 4 900 |
+| Matanuska-Susitna | 75 | 40 | 0.72 | -7.8 | -8.7 | 5 000 | 4 995 |
+| Interior | 30 | 19 | 0.60 | -8.7 | -9.0 | 5 000 | 4 147 |
 
 **Table S1.** Survey coverage and scores of the three survey regions and of the Copper River basin. The basin was set apart from the test of the second hypothesis, because the survey flew over its cells in one or two of the nine years from 2016 to 2024. Years flown is the median count over the sampled cells of each class. AUC is the area under the curve for ranking attacked above unattacked, with Sentinel-2 red scored on the cells with a clear day. VV is the radar signal sent and received in vertical polarization.
 

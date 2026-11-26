@@ -17,6 +17,7 @@ strip_a <- read.csv("../03.outputs/statewide_strip.csv")
 struct <- as.matrix(read.csv("../03.outputs/landscape_structure.csv", row.names = 1)); land_auc <- as.matrix(read.csv("../03.outputs/landscape_auc.csv", row.names = 1))
 nidrm_cmp <- as.matrix(read.csv("../03.outputs/nidrm_comparison.csv", row.names = 1))
 o1 <- read.csv("../03.outputs/optical_strip.csv")[1:11, ]; rownames(o1) <- o1$source; a2 <- function(r, v = "AUC") sprintf("%.2f", o1[r, v])
+mt <- read.csv("../03.outputs/model_tuning.csv"); mt <- mt[mt$model != "Random forest, untuned", ]  # the four tuned models of Table 7
 opt_cov <- read.csv("../03.outputs/optical_coverage.csv", row.names = 1); optical_regions <- as.matrix(read.csv("../03.outputs/optical_regions.csv", row.names = 1))
 # The render stops if a direction stated in words below no longer holds in the saved tables.
 stopifnot(o1["B12", "AUC"] < o1["VV_pooled", "AUC"],
@@ -38,7 +39,7 @@ On comparison, four other datasets were scored against the same severity map, as
 
 Sentinel-2 was averaged into the same 90 m cells, since the paper maps stand structure before an attack, not dieback. Band 12 in the shortwave infrared, named the primary Sentinel-2 measure before any scoring, ranked the strip's stands at `r a2("B12")` against `r a2("VV_pooled")` for the radar. Against the aerial survey, the radar ranked higher than Sentinel-2 red on the Kenai Peninsula and in the Matanuska-Susitna Borough. Across Alaska, a forest cell had a median of `r opt_cov["alaska", "clear_median"]` clear Sentinel-2 days in the two summers before the outbreak, against `r opt_cov["alaska", "scenes_median"]` radar scenes.
 
-The Methods now run in five subsections in the order of the workflow, which Figure 2 draws and Table S3 lists step by step. As you suggested, the Results add a bootstrap at equal class sizes and area-weighted accuracy, Figure 3 shows the map, and every table caption defines its abbreviations.
+The Methods now run in five subsections in the order of the workflow, which Figure 2 draws and Table S3 lists step by step. As you suggested, the Results add a bootstrap at equal class sizes and area-weighted accuracy, Figure 3 shows the map, and every table caption defines its abbreviations. The Results also test four tuned models for overfitting by spatial 5-fold cross-validation, with RMSE ratios of `r sprintf("%.2f", min(mt$ratio))` to `r sprintf("%.2f", max(mt$ratio))` (Table 7).
 
 The manuscript is original, has not been published and is not under consideration elsewhere. I am the sole author, I have read and approved it, I have no conflict of interest to declare, and the work received no specific funding.
 
