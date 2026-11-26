@@ -8,15 +8,15 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 
 <img src="03.outputs/figures/figure1.png" width="100%" alt="Figure 1">
 
-**Figure 1** The study area. Main map, Alaska in the Alaska Albers projection (EPSG:3338) over a shaded relief. Red marks the spruce beetle damage mapped by the aerial detection survey from 2016 to 2024. Solid black outlines the three regions in which the statewide map was validated, and dashed black the Copper River basin, set apart. Blue frames the validation strip of the Susitna valley, in which Zwieback et al. (2024b) mapped dead spruce crowns on a WorldView-2 image of 2 August 2021. Boxes mark the two detail panels. A, Cook Inlet, the Kenai Peninsula and the Susitna valley. B, the Interior along the Nenana River.
+**Figure 1** Study area. Main map, Alaska over shaded relief (EPSG:3338). Red, spruce beetle damage of the aerial detection survey, 2016 to 2024. Solid black, the three survey regions. Dashed black, the Copper River basin. Blue, the Susitna valley validation strip. A, Cook Inlet, the Kenai Peninsula and the Susitna valley. B, the Interior along the Nenana River.
 
 <img src="03.outputs/figures/figure2.png" width="100%" alt="Figure 2">
 
-**Figure 2** The five steps of the study, in the order of the Methods. The reference data of 2021 trained the threshold τ, and the validation data, which did not set it, tested the prediction. The comparison data of step 5 were scored on the same cells as Hypotheses 1 and 2. Blue marks the radar, dark blue the training, green the prediction and its application, dark green the validation and grey the comparison data.
+**Figure 2** The five steps of the study, in the order of the Methods. Blue, radar. Dark blue, training. Green, prediction. Dark green, validation. Grey, comparison data. τ, the backscatter threshold.
 
 <img src="03.outputs/figures/figure3.png" width="100%" alt="Figure 3">
 
-**Figure 3** Forest rated susceptible across Alaska, the share of each 1 km cell’s forest whose pre-outbreak mean VV backscatter reached the strip threshold of -8.24 dB. The share runs from grey for none to dark blue for all. Land with less than a fifth of its area in forest is pale grey, and southeast Alaska without conifer data, left unmapped, is darker grey. Solid black outlines are the three test regions, the dashed outline the Copper River basin set apart, and the black frame the validation strip.
+**Figure 3** Share of forest rated susceptible in each 1 km cell, from grey for none to dark blue for all, at the threshold of -8.24 dB. Pale grey, land under one fifth forest. Darker grey, southeast Alaska, unmapped. Solid black, the three survey regions. Dashed black, the Copper River basin. Black frame, the validation strip.
 
 <img src="03.outputs/figures/figureS1.png" width="100%" alt="Figure S1">
 
@@ -24,7 +24,7 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 
 ## Tables
 
-**Table 1.** The measures the study entered, the attribute of the hazard ratings each stands for, the direction expected in the stands an outbreak attacked, and the literature the expectation rests on. VV is the radar signal sent and received in vertical polarization, and HV the signal sent horizontally and received vertically. PALSAR is the Phased Array L-band Synthetic Aperture Radar, on the Advanced Land Observing Satellite (ALOS).
+**Table 1.** Measures entered and the hazard rating attribute each represents. VV and HV, radar polarizations. PALSAR, Phased Array L-band Synthetic Aperture Radar. ALOS, Advanced Land Observing Satellite.
 
 | Measure | Indicator | Assumption | Basis |
 |---|---|---|---|
@@ -34,7 +34,7 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 | Change in VV through the outbreak | Mortality | A difference of either sign, if the radar recorded the mortality | Radar was proposed for bark beetle damage, although detection before the crowns fade has had limited success (Hollaus and Vreugdenhil 2019, Hechtl et al. 2025) |
 | Diameter and height of dead and live white spruce on inventory plots | Tree size | Dead trees larger and taller where the outbreak has run | Killed trees were larger and grew more slowly than survivors in the same stands (Werner and Holsten 1983, Hard 1985, Doak 2004) |
 
-**Table 2.** Satellite and survey data used in the study, and how each entered the analysis. Every raster dataset was averaged into the 90 m cells of the map. VV and VH are the radar signal sent and received in vertical polarization, and sent vertically and received horizontally; HV and HH are sent horizontally and received vertically or horizontally. γ0 is terrain-corrected radar backscatter. MSI is the Multispectral Instrument of Sentinel-2. PALSAR is the Phased Array L-band Synthetic Aperture Radar on the Advanced Land Observing Satellite 2 (ALOS-2). 3DEP is the United States 3D Elevation Program, GLO-30 the Copernicus 30 m digital elevation model, and ArcticDEM the Polar Geospatial Center surface model. Sentinel-1 built the susceptibility map, and the other satellites and the survey tested it.
+**Table 2.** Satellite and survey data. VV, VH, HV and HH, radar polarizations, sent then received, vertical (V) or horizontal (H). γ0, terrain-corrected backscatter. MSI, Multispectral Instrument. PALSAR-2, Phased Array L-band Synthetic Aperture Radar 2. ALOS-2, Advanced Land Observing Satellite 2. 3DEP, the 3D Elevation Program. GLO-30, Copernicus 30 m elevation model.
 
 | Dataset | Signal or band | Orbit / path | Period | Resolution | Images | Processing | Cloud | Role |
 |---|---|---|---|---|---|---|---|---|
@@ -45,7 +45,7 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 | WorldView-2 (severity map) | optical, dead-crown share | fixed swath | 2 Aug 2021 | about 0.5 m, read at 90 m | one image | crown delineation (Zwieback 2024) | clear scene | reference labels, 34 175 attacked and 6 747 unattacked cells |
 | Aerial detection survey | damage mapped by eye | from an aircraft | 2016 to 2024 | mapped polygons | yearly | field survey | not affected | validation |
 
-**Table 3.** Area under the receiver operating characteristic curve for ranking the stands the outbreak attacked above the unattacked stands, by sensor and by label. The severity map is the 90 m map of 2021 of Zwieback et al. (2024b). The survey is the aerial detection survey’s polygons of 2016 to 2024 across the rest of the Matanuska-Susitna Borough. The statewide map is the pooled, angle-corrected mean VV backscatter of every scene, and the two orbits are the single-orbit means of the same months. VV is the radar signal sent and received in vertical polarization, and HV the signal sent horizontally and received vertically. PALSAR is the Phased Array L-band Synthetic Aperture Radar 2.
+**Table 3.** AUC of each sensor for ranking attacked above unattacked stands. Severity map, the 90 m map of 2021 (Zwieback et al. 2024b). Survey, the aerial detection survey of 2016 to 2024 in the Matanuska-Susitna Borough. AUC, area under the receiver operating characteristic curve. VV and HV, radar polarizations. PALSAR-2, an L-band radar.
 
 | Sensor | Severity map | Matanuska-Susitna survey |
 |---|---|---|
@@ -54,7 +54,7 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 | Sentinel-1 VV, descending orbit 131 | 0.84 | 0.63 |
 | PALSAR L-band HV | 0.86 | 0.72 |
 
-**Table 4.** Mean and standard deviation of each sensor in the 34 175 attacked and 6 747 unattacked cells of the severity map. Radar values are backscatter in decibels, and Sentinel-2 values are top-of-atmosphere reflectance and the normalized difference vegetation index (NDVI) of summer 2016. The classes were compared by the Wilcoxon rank-sum test (\* p ≤ 0.05, \*\* p ≤ 0.01, \*\*\* p ≤ 0.001, \*\*\*\* p ≤ 0.0001). VV is the radar signal sent and received in vertical polarization, and HV and HH the signal sent horizontally and received vertically or horizontally. PALSAR-2 is the Phased Array L-band Synthetic Aperture Radar 2.
+**Table 4.** Mean and standard deviation of each sensor in the 34 175 attacked and 6 747 unattacked cells of the severity map. Radar in decibels (dB), Sentinel-2 in reflectance. Wilcoxon rank-sum test, \* p ≤ 0.05, \*\* p ≤ 0.01, \*\*\* p ≤ 0.001, \*\*\*\* p ≤ 0.0001. VV, HV and HH, radar polarizations. PALSAR-2, an L-band radar. NDVI, normalized difference vegetation index.
 
 | Sensor | Attacked, M (SD) | Unattacked, M (SD) |
 |---|---|---|
@@ -66,7 +66,7 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 | Sentinel-2 red | 0.043 (0.007)\*\*\*\* | 0.061 (0.012) |
 | Sentinel-2 NDVI | 0.704 (0.054)\*\*\*\* | 0.609 (0.096) |
 
-**Table 5.** Confusion matrices of the threshold map and of three models, in counts of 90 m cells. The reference is the attacked and unattacked cells of the severity map. The map was read at its threshold on every labelled cell, and each model on its five test folds at a fitted probability of 0.5. UA is the user’s accuracy and PA the producer’s accuracy.
+**Table 5.** Confusion matrices of the threshold map and three models, in 90 m cells. UA, user’s accuracy. PA, producer’s accuracy.
 
 |  | Reference |  |  |  |  |
 |---|---|---|---|---|---|
@@ -84,7 +84,7 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 |  |  | Not susceptible | 1 203 | 3 858 | 76.2 |
 |  |  | PA (%) | 96.5 | 57.2 |  |
 
-**Table 6.** Separability, accuracy and fit of each sensor against the attacked and unattacked cells of the severity map. M is the separability index, the difference of the class means over the sum of their standard deviations. AUC is the area under the receiver operating characteristic curve. Overall accuracy was read at each sensor’s own Youden threshold. R² is Nagelkerke’s, RMSE the root mean square error and MAE the mean absolute error of a logistic regression of the class on the sensor, and Moran’s I is the spatial autocorrelation of its residuals. VV is the radar signal sent and received in vertical polarization, and HV and HH the signal sent horizontally and received vertically or horizontally. PALSAR-2 is the Phased Array L-band Synthetic Aperture Radar 2, and NDVI the normalized difference vegetation index.
+**Table 6.** Separability, accuracy and logistic fit of each sensor. M, separability index. AUC, area under the receiver operating characteristic curve. R², Nagelkerke’s. RMSE, root mean square error. MAE, mean absolute error. Moran’s I, spatial autocorrelation of the residuals. VV, HV and HH, radar polarizations. PALSAR-2, an L-band radar. NDVI, normalized difference vegetation index.
 
 | Sensor | M | AUC | Overall accuracy (%) | R² | RMSE | MAE | Moran's I |
 |---|---|---|---|---|---|---|---|
@@ -96,7 +96,7 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 | Sentinel-2 red | 0.95 | 0.91 | 85 |  |  |  |  |
 | Sentinel-2 NDVI | 0.64 | 0.88 | 77 |  |  |  |  |
 
-**Table 7.** Diagnostics of five models of the attacked and unattacked cells of the severity map. Model performance was assessed by the full root mean square error (RMSE) of the model fitted to every cell, the cross-validated RMSE, the overfitting ratio (RMSE ratio, cross-validated over full), the systematic bias (Theil’s U bias), the mean absolute error (MAE), and the overall accuracy (OA) with the producer’s accuracy (PA) of each class at a fitted probability of 0.5.
+**Table 7.** Model diagnostics. RMSE, root mean square error, full for the model fitted to every cell and cross-validated for the test folds. Theil’s U bias, systematic bias. MAE, mean absolute error. OA, overall accuracy. PA, producer’s accuracy.
 
 | Model | Hyperparameters | Full RMSE | Cross-validated RMSE | RMSE ratio | Theil's U bias | MAE | OA (%) | PA, attacked (%) | PA, unattacked (%) |
 |---|---|---|---|---|---|---|---|---|---|
@@ -106,7 +106,7 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 | Gradient boosting | Depth 4, learning rate 0.05, 200 trees | 0.261 | 0.273 | 1.05 | 0.0005 | 0.149 | 90.0 | 96.5 | 57.2 |
 | Random forest, untuned | Minimum node size 1, 1 predictor a split | 0.104 | 0.289 | 2.78 | 0.0006 | 0.148 | 89.2 | 95.8 | 55.5 |
 
-**Table 8.** Forest and susceptible forest in the three survey regions and in Alaska, summed at 1 km from the 90 m map. Forest is the area of 30 m cells with a conifer top cover of 5% or more in 2015, or of a LANDFIRE spruce type where that layer held no data west of 141° W. Susceptible forest is the forest of the 90 m cells whose pre-outbreak mean VV backscatter reached -8.24 dB, the threshold that best separated the attacked from the unattacked cells of the severity map. Scenes is the median number of Sentinel-1 scenes behind a forest cell. VV is the radar signal sent and received in vertical polarization. LANDFIRE is an interagency wildland fire data programme of the United States.
+**Table 8.** Forest and susceptible forest by region. Forest, conifer top cover of 5% or more in 2015, or a LANDFIRE spruce type where that layer held no data. Susceptible, pre-outbreak mean VV backscatter of -8.24 dB or more. Scenes, median Sentinel-1 scenes per forest cell. VV, vertical polarization. LANDFIRE, a United States wildland fire data programme. dB, decibels.
 
 | Region | Forest (km²) | Susceptible (km²) | Susceptible (%) | Scenes |
 |---|---|---|---|---|
@@ -115,7 +115,7 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 | Interior | 70 639 | 10 105 | 14 | 69 |
 | Alaska | 446 963 | 81 945 | 18 | 55 |
 
-**Table 9.** The statewide map against the aerial detection survey in three regions. Attacked cells lay inside a spruce beetle polygon on white spruce of 2016 to 2024. Unattacked cells were forest the surveyors flew over within 10 km of one, never inside a spruce beetle polygon of any year. Rated susceptible is the share of cells at or above the map’s threshold. AUC is the area under the curve. VV is the radar signal sent and received in vertical polarization.
+**Table 9.** The statewide map against the aerial detection survey. Attacked, cells inside a spruce beetle polygon of 2016 to 2024. Unattacked, surveyed forest within 10 km of a polygon, never inside one. AUC, area under the curve. VV, vertical polarization. dB, decibels.
 
 | Region | Rated susceptible (%)<br>Attacked | Rated susceptible (%)<br>Unattacked | AUC | Mean VV backscatter (dB)<br>Attacked | Mean VV backscatter (dB)<br>Unattacked | Cells sampled<br>Attacked | Cells sampled<br>Unattacked |
 |---|---|---|---|---|---|---|---|
@@ -123,7 +123,7 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 | Matanuska-Susitna | 75 | 40 | 0.72 | -7.8 | -8.7 | 5 000 | 4 995 |
 | Interior | 30 | 19 | 0.60 | -8.7 | -9.0 | 5 000 | 4 147 |
 
-**Table S1.** Survey coverage and scores of the three survey regions and of the Copper River basin. The basin was set apart from the test of the second hypothesis, because the survey flew over its cells in one or two of the nine years from 2016 to 2024. Years flown is the median count over the sampled cells of each class. AUC is the area under the curve for ranking attacked above unattacked, with Sentinel-2 red scored on the cells with a clear day. VV is the radar signal sent and received in vertical polarization.
+**Table S1.** Survey coverage and scores of the three survey regions and the Copper River basin. Years flown, median years of 2016 to 2024 the survey flew over a sampled cell. AUC, area under the curve, with Sentinel-2 red scored on cells with a clear day. VV, vertical polarization.
 
 | Region | Attacked | Unattacked | Years flown, attacked | Years flown, unattacked | AUC, VV | AUC, red | AUC, hazard map |
 |---|---|---|---|---|---|---|---|
@@ -132,7 +132,7 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 | Interior | 5 000 | 4 147 | 4 | 4 | 0.60 | 0.65 | 0.52 |
 | Copper River basin, set apart | 2 323 | 4 999 | 1 | 2 | 0.37 | 0.52 | 0.37 |
 
-**Table S2.** Fit and overfitting diagnostics of the logistic fits of the attacked and unattacked cells of the severity map, and of the temporal network on the crown labels. R² is Nagelkerke’s, starred by the likelihood ratio test against the null fit, and Hosmer-Lemeshow is the statistic over ten groups, starred by its test. Brier is the mean squared error of the fitted probability against the label, and RMSE is its root. The relative error, rRMSE, is that root over the mean of the label, in per cent, and MAE is the mean absolute error. The RMSE ratio is the cross-validated RMSE over the full RMSE, and for the network the RMSE of the held-out folds over that of the training folds. Above 1.1 a fit is overfitted (Valbuena et al. 2017; Murphy et al. 2026). Theil’s U bias is the share of the held-out mean squared error due to the difference between the mean prediction and the mean label. Moran’s I measures the clustering of the residuals over the eight nearest labelled cells, starred by its test. Durbin-Watson is the statistic of the residuals in cell order. VV is the radar signal sent and received in vertical polarization, and HV and HH the signal sent horizontally and received vertically or horizontally. PALSAR is the Phased Array L-band Synthetic Aperture Radar 2. \* p ≤ 0.05, \*\* p ≤ 0.01, \*\*\* p ≤ 0.001, \*\*\*\* p ≤ 0.0001.
+**Table S2.** Fit and overfitting diagnostics of the logistic fits, and of the temporal network on the crown labels. R², Nagelkerke’s, starred by the likelihood ratio test. Hosmer-Lemeshow, statistic over ten groups, starred by its test. Brier, mean squared error of the fitted probability. RMSE, its root. rRMSE, RMSE over the label mean (%). MAE, mean absolute error. RMSE ratio, cross-validated over full RMSE, overfitted above 1.1 (Valbuena et al. 2017; Murphy et al. 2026). Theil’s U bias, share of the test error due to bias. Moran’s I, clustering of residuals over the eight nearest cells, starred by its test. Durbin-Watson, statistic of residuals in cell order. VV, HV and HH, radar polarizations. PALSAR-2, an L-band radar. \* p ≤ 0.05, \*\* p ≤ 0.01, \*\*\* p ≤ 0.001, \*\*\*\* p ≤ 0.0001.
 
 | Model | n | R² | Hosmer-Lemeshow | Brier | RMSE | rRMSE (%) | MAE | RMSE ratio | Theil's U bias | Moran's I | Durbin-Watson |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -148,7 +148,7 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 | All five sources | 40 922 | 0.556\*\*\*\* | 662\*\*\*\* | 0.067 | 0.259 | 31.0 | 0.138 | 1.01 | 0.000 | 0.368\*\*\*\* | 1.34 |
 | Temp network, blind crown folds | 510 |  |  | 0.092 | 0.303 | 41.9 | 0.138 | 2.13 | 0.012 | 0.269\*\*\*\* | 1.35 |
 
-**Table S3.** Data, dates, operation and output of each step of the study. The reference data of step 2 set the threshold and tested the first hypothesis, and the validation data of step 4 tested the map without setting it. VV is the radar signal sent and received in vertical polarization, and HV and HH the signal sent horizontally and received vertically or horizontally. PALSAR-2 is the Phased Array L-band Synthetic Aperture Radar 2, and NDVI the normalized difference vegetation index. M is the separability index of Kaufman and Remer (1994). LANDFIRE is an interagency wildland fire data programme of the United States, and dB is the decibel.
+**Table S3.** Data, dates, operation and output of each step. VV, HV and HH, radar polarizations. PALSAR-2, an L-band radar. NDVI, normalized difference vegetation index. M, separability index. LANDFIRE, a United States wildland fire data programme. dB, decibels.
 
 | Step | Data | Dates | Operation | Output |
 |---|---|---|---|---|
@@ -158,7 +158,7 @@ In Alaska, the spruce beetle, *Dendroctonus rufipennis* (Kirby), killed the larg
 | 4. Validation | Validation data, the aerial detection survey in three regions, the Copper River basin set apart, and 708 inventory plots with white spruce in the same regions | 2016 to 2024; plots measured 1999 to 2025 | Area under the curve and area-weighted accuracy; paired Wilcoxon signed-rank test of dead against live white spruce | Test of the second hypothesis |
 | 5. Comparison | PALSAR-2 L-band HV and HH; change in Sentinel-1 VV; Sentinel-2 red, band 12 and NDVI; Forest Service hazard map | 2015 and 2016; October 2014 to December 2016 against June 2019 to August 2021; summer 2016, with 2015 for clear days; 2012 | Scored as the mean backscatter, on the same cells | Benchmarks of the mean backscatter |
 
-**Table S4.** Separability and classification accuracy of each source at its own Youden threshold against the attacked and unattacked cells of the severity map. M is the separability index of Kaufman and Remer (1994), the difference of the class means over the sum of their standard deviations, starred by the Wilcoxon rank-sum test. AUC is the area under the receiver operating characteristic curve, with the 95% confidence interval (CI) of DeLong et al. (1988). The threshold is in the source’s own unit, decibels for radar and reflectance for red, which was darker over attacked cells. For the normalized difference vegetation index (NDVI) of the clear days of 23 June to 31 August 2016, it is the index itself. Kappa is Cohen’s kappa, and the overall accuracy carries its exact binomial 95% CI. VV is the radar signal sent and received in vertical polarization, and HV and HH the signal sent horizontally and received vertically or horizontally. PALSAR is the Phased Array L-band Synthetic Aperture Radar 2. \* p ≤ 0.05, \*\* p ≤ 0.01, \*\*\* p ≤ 0.001, \*\*\*\* p ≤ 0.0001.
+**Table S4.** Separability and classification accuracy of each sensor at its Youden threshold. M, separability index (Kaufman and Remer 1994), starred by the Wilcoxon rank-sum test. AUC, area under the receiver operating characteristic curve, with the 95% confidence interval (CI) of DeLong et al. (1988). Threshold, in decibels (dB) for radar and reflectance for red. Kappa, Cohen’s kappa. Overall accuracy with its exact binomial 95% CI. VV, HV and HH, radar polarizations. PALSAR-2, an L-band radar. NDVI, normalized difference vegetation index. \* p ≤ 0.05, \*\* p ≤ 0.01, \*\*\* p ≤ 0.001, \*\*\*\* p ≤ 0.0001.
 
 | Source | Attacked cells | Unattacked cells | M | AUC (95% CI) | Threshold | Kappa | Commission, attacked | Commission, unattacked | Omission, attacked | Omission, unattacked | Overall accuracy (95% CI) |
 |---|---|---|---|---|---|---|---|---|---|---|---|

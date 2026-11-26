@@ -256,9 +256,9 @@ def check_count(ms):
 
 
 def defined(abbr, legend):
-    """True if the legend defines the abbreviation, as "(NDVI)", "NDVI, the", "NDVI is", "NDVI the", "PALSAR-2 is" or "HV and HH the"."""
+    """True if the legend defines the abbreviation, as "(NDVI)", "NDVI, the", "NDVI is", "NDVI the", "PALSAR-2 is" or "HV and HH the", or in the list form of 2026-11-26, "MSI, Multispectral" and "VV, VH, HV and HH, radar"."""
     a = re.escape(abbr) + r"(?:-\d+)?"  # a numbered name, such as PALSAR-2, defines its stem
-    return re.search(rf"\({a}\)|(?<![A-Za-z]){a},\s+(?:the\s+)?[a-z]|(?<![A-Za-z]){a}(?:\s+and\s+[A-Za-z][\w-]*)?\s+(?:is|are|the|means|denotes|stands for)\s|(?<![A-Za-z]){a}\s*=", legend) is not None
+    return re.search(rf"\({a}\)|(?<![A-Za-z]){a},\s+(?:the\s+)?[A-Za-z]|(?<![A-Za-z]){a}\s+and\s+[A-Za-z][\w-]*,\s|(?<![A-Za-z]){a}(?:\s+and\s+[A-Za-z][\w-]*)?\s+(?:is|are|the|means|denotes|stands for)\s|(?<![A-Za-z]){a}\s*=", legend) is not None
 
 
 TABLE_CAP = re.compile(r"Table\s+(S\s?\d+|\d+)\b")  # Table 1 of the manuscript and Table S1 of the supplement, before or after supplement-labels.py closes "Table S 1"
